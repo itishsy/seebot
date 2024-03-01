@@ -156,7 +156,6 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         self.step['stepName'] = self.let_step_name.text()
         self.step_item.setText(self.let_step_name.text())
         self.step_item.setData(1, self.step)
-        print()
         self.close()
 
     def on_run_click(self):
