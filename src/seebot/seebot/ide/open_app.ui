@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>frm_open</class>
+ <widget class="QWidget" name="frm_open">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>seebot 打开流程</string>
+  </property>
+  <widget class="QLabel" name="lab_flow">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>110</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>流程：</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lab_account">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>160</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>任务：</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmb_app">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>50</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>广州-社保</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>广州-公积金</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="lab_app">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>60</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>应用：</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_open">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>230</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>打开</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmb_flow">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>100</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string>广州社保单工伤增员</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>广州社保单工伤增员</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>广州社保减员</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QComboBox" name="cmb_task">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>150</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string>广州南仕邦人力资源有限公司-123929</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>广州南仕邦人力资源有限公司-123929</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>广州仕邦人力资源有限公司-123923</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QCheckBox" name="ckb_remember">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>230</y>
+     <width>80</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>记住选择</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

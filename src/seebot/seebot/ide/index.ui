@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>frm_index</class>
+ <widget class="QWidget" name="frm_index">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>seebot 登入</string>
+  </property>
+  <widget class="QLineEdit" name="inp_password">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>150</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="placeholderText">
+    <string>输入密码</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lab_username">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>110</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>用户名：</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="inp_username">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>100</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="placeholderText">
+    <string>输入用户名</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lab_password">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>160</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>密码：</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmb_server">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>50</y>
+     <width>251</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string>https://rpaadmin.seebon.com</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>https://rpaadmin.seebon.com</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>http://192.168.0.99:9999</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="lab_server">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>60</y>
+     <width>53</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>服务器：</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_login">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>230</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>登入</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="ckb_remember">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>230</y>
+     <width>80</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>记住我</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
