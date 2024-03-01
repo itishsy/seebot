@@ -143,7 +143,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
             self.win = editor.StepEditorWin()
             self.win.step = items[0].data(1)
             self.win.action_name = items[1].text()
-            # self.win.actions = self.actions
+            self.win.step_item = items[0]
             self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.win.show()
         else:
