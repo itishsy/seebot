@@ -59,7 +59,7 @@
     <enum>QTabWidget::Triangular</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideNone</enum>
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="let_skip_to">
+        <widget class="QLineEdit" name="fid_skipTo">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -174,7 +174,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="let_timeout">
+        <widget class="QLineEdit" name="fid_timeout">
          <property name="placeholderText">
           <string>10秒</string>
          </property>
@@ -188,7 +188,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="let_skip_condition">
+        <widget class="QLineEdit" name="fid_skipCondition">
          <property name="placeholderText">
           <string>无</string>
          </property>
@@ -202,7 +202,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="let_wait_before">
+        <widget class="QLineEdit" name="fid_waitBefore">
          <property name="placeholderText">
           <string>不等待</string>
          </property>
@@ -216,7 +216,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="let_wait_after">
+        <widget class="QLineEdit" name="fid_waitAfter">
          <property name="placeholderText">
           <string>不等待</string>
          </property>
@@ -258,7 +258,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="failed_strategy">
+        <widget class="QComboBox" name="fid_failedStrategy">
          <item>
           <property name="text">
            <string>中止流程</string>
@@ -284,7 +284,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="cmb_false_skip_to"/>
+        <widget class="QComboBox" name="fid_failedSkipTo"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="Label_8">
@@ -294,7 +294,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="let_failed_retry">
+        <widget class="QLineEdit" name="fid_failedRetry">
          <property name="placeholderText">
           <string>不重试</string>
          </property>
@@ -343,7 +343,7 @@
    <property name="title">
     <string/>
    </property>
-   <widget class="QLineEdit" name="let_step_name">
+   <widget class="QLineEdit" name="fid_stepName">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -356,7 +356,7 @@
      <string>步骤名称</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="ckb_status">
+   <widget class="QCheckBox" name="fid_status">
     <property name="geometry">
      <rect>
       <x>390</x>

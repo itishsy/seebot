@@ -160,7 +160,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
                 return act
 
     def on_save_click(self):
-        print("save")
+        print(self.steps)
 
     def on_run_click(self):
         self.win = running.FlowRunningWin()

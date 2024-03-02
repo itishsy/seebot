@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QLabel,QFormLayout, QComboBox, QLineEdit
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMainWindow, QWidget, QLabel,QFormLayout, QComboBox, QCheckBox, QLineEdit
+from PySide6.QtCore import Qt, QObject
 
 from seebot.ide.api import Api
 from seebot.ide.step_editor import Ui_frm_step_edit
@@ -22,13 +22,13 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
 
     def show(self) -> None:
         super(StepEditorWin, self).show()
-        if hasattr(self,'step'):
+        if hasattr(self, 'step'):
             self.setWindowTitle('编辑 【' + self.action_name + '】')
         else:
             self.setWindowTitle('新建 【' + self.action_name + '】')
             self.step = self.init_step(self.action_code, self.number)
         self.load_step_data()
-        self.load_trans_data()
+        # self.load_trans_data()
         self.load_dynamic_data('target')
         self.load_dynamic_data('action')
 
@@ -41,22 +41,53 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                 'level': 1, 'status': 1, 'failedRetry': None, 'failedStrategy': 0, 'failedSkipTo': '',
                 'skipTo': '登录成功?', 'falseSkipTo': None, 'skipCondition': '', 'waitBefore': None,
                 'waitAfter': None, 'timeout': 5, 'type': None, 'openEdit': None,
-                'actionArgsVOS': action_args["data"],'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
+                'actionArgsVOS': action_args["data"], 'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
 
     def load_step_data(self):
-        self.let_step_name.setText(self.step['stepName'])
-        if self.step['status'] != 1:
-            self.ckb_status.setChecked(True)
+        print(self.step)
+
+        for key in self.step.keys():
+            fid_name = "fid_"+key
+            if hasattr(self, fid_name):
+                fid = getattr(self, fid_name)
+                if isinstance(fid, QCheckBox):
+                    fid.stateChanged.connect(self.editing_finished)
+                    if key in ['status']:
+                        fid.setChecked(False if self.step[key] == 1 else True)
+                    else:
+                        fid.setChecked(True if self.step[key] == 1 else False)
+                elif isinstance(fid, QComboBox):
+                    fid.currentTextChanged.connect(self.editing_finished)
+                    if self.step[key] is not None:
+                        fid.setCurrentText(str(self.step[key]))
+                else:
+                    fid.editingFinished.connect(self.editing_finished)
+                    if self.step[key] is not None:
+                        fid.setText(str(self.step[key]))
+
+
+        # self.fid_stepName.setText(self.step['stepName'])
+        # if self.step['status'] != 1:
+        #     self.fid_status.setChecked(True)
+        #
+        #
+        # self.fid_stepName.editingFinished.connect(self.editing_finished)
+        # self.fid_status.editingFinished.connect(self.editing_finished)
 
     def load_trans_data(self):
         if self.step['timeout'] is not None:
-            self.let_timeout.setText(str(self.step['timeout']))
+            self.fid_timeout.setText(str(self.step['timeout']))
         if self.step['skipCondition'] is not None:
-            self.let_skip_condition.setText(str(self.step['skipCondition']))
+            self.fid_skipCondition.setText(str(self.step['skipCondition']))
         if self.step['waitBefore'] is not None:
-            self.let_wait_before.setText(str(self.step['waitBefore']))
+            self.fid_waitBefore.setText(str(self.step['waitBefore']))
         if self.step['waitAfter'] is not None:
-            self.let_wait_after.setText(str(self.step['waitAfter']))
+            self.fid_waitAfter.setText(str(self.step['waitAfter']))
+
+        self.fid_timeout.editingFinished.connect(self.editing_finished)
+        self.fid_skipCondition.editingFinished.connect(self.editing_finished)
+        self.fid_waitBefore.editingFinished.connect(self.editing_finished)
+        self.fid_waitAfter.editingFinished.connect(self.editing_finished)
 
     def load_dynamic_data(self, region):
         self.region = region
@@ -152,9 +183,21 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             self.target_fields.append(field)
         return field
 
+    def editing_finished(self):
+        sender = self.sender()
+        fid_name = sender.objectName().replace('fid_', '')
+        if isinstance(sender, QComboBox):
+            self.step[fid_name] = sender.CurrentText()
+        elif isinstance(sender, QCheckBox):
+            if fid_name in ['status']:
+                self.step[fid_name] = 0 if sender.isChecked() else 1
+            else:
+                self.step[fid_name] = 1 if sender.isChecked() else 0
+        else:
+            self.step[fid_name] = sender.text()
+
     def on_save_click(self):
-        self.step['stepName'] = self.let_step_name.text()
-        self.step_item.setText(self.let_step_name.text())
+        self.step_item.setText(self.step['stepName'])
         self.step_item.setData(1, self.step)
         self.close()
 
