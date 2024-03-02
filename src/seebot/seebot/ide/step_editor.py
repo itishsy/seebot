@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'step_editor.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_frm_step_edit(object):
             frm_step_edit.setObjectName(u"frm_step_edit")
         frm_step_edit.setWindowModality(Qt.ApplicationModal)
         frm_step_edit.resize(482, 545)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(frm_step_edit.sizePolicy().hasHeightForWidth())
@@ -225,7 +225,7 @@ class Ui_frm_step_edit(object):
         self.let_failed_retry.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u91cd\u8bd5", None))
         self.tab_step.setTabText(self.tab_step.indexOf(self.tab_trans), QCoreApplication.translate("frm_step_edit", u"\u6d41\u8f6c\u63a7\u5236", None))
         self.btn_run.setText(QCoreApplication.translate("frm_step_edit", u"\u8fd0\u884c\u6b64\u6b65\u9aa4", None))
-        self.btn_save.setText(QCoreApplication.translate("frm_step_edit", u"\u4fdd\u5b58", None))
+        self.btn_save.setText(QCoreApplication.translate("frm_step_edit", u"\u78ba\u5b9a", None))
         self.groupBox_3.setTitle("")
         self.let_step_name.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u6b65\u9aa4\u540d\u79f0", None))
         self.ckb_status.setText(QCoreApplication.translate("frm_step_edit", u"\u7981\u7528", None))

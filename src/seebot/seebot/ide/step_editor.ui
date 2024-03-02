@@ -328,7 +328,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>保存</string>
+    <string>確定</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox_3">
