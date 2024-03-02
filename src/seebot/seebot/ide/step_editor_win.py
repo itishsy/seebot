@@ -108,13 +108,15 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
 
             field = self.add_dynamic_field(field_key, item['fieldType'], item['fieldName'])
             if isinstance(field, QComboBox):
-                current_text = None
+                current_text = ''
                 for cb_item in item['robotDataDicts']:
                     field.addItem(cb_item['dictName'], cb_item['dictCode'])
                     if 'fieldValue' in item and item['fieldValue'] == cb_item['dictCode']:
                         current_text = cb_item['dictName']
-                if current_text is not None:
-                    field.setCurrentText(current_text)
+                field.addItem('', '')
+                field.setCurrentText(current_text)
+                # else:
+                #     field.setCurrentText('')
                 if item['cond'] != '':
                     field.currentTextChanged.connect(self.on_dynamic_combo_change)
                     if region == 'action':
@@ -127,16 +129,32 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                     field.setText(item['fieldValue'])
                     field.editingFinished.connect(self.editing_finished)
 
+    def get_cond_data(self):
+        args_vos = self.step[self.region + "ArgsVOS"]
+        for item in args_vos:
+            if item['cond'] != '':
+                return json.loads(item['cond'])
+
     def on_dynamic_combo_change(self, arg1):
+        sender = self.sender()
+        if sender is not None and sender.parent() is not None and sender.parent().parent() is not None:
+            self.region = sender.parent().parent().objectName().split('_')[1]
+            print(sender.parent().parent())
         combo = None
         dynamic_fields = self.action_fields if self.region == 'action' else self.target_fields
+        if arg1 == '':
+            for field in dynamic_fields:
+                if field.objectName().split('_')[1] != sender.objectName().split('_')[1]:
+                    field.setParent(None)
+            return
         for f in dynamic_fields:
             if not isinstance(f, QLabel) and hasattr(f, 'currentText') and f.currentText() == arg1:
                 combo = f
                 break
 
         if combo is not None:
-            cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
+            # cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
+            cond_data = self.get_cond_data()
             show_fields = cond_data[combo.currentData()].split(',')
             current_field_key = combo.objectName().split('_')[1]
             for field in dynamic_fields:
@@ -151,7 +169,8 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                     if isinstance(cond_field, QComboBox) and item['robotDataDicts'] is not None:
                         for cb_item in item['robotDataDicts']:
                             cond_field.addItem(cb_item['dictName'], cb_item['dictCode'])
-                        if 'fieldValue' in item:
+                        cond_field.addItem('', '')
+                        if 'fieldValue' in item and item['fieldValue'] is not None:
                             cond_field.setCurrentText(item['fieldValue'])
                     else:
                         if 'fieldValue' in item:
