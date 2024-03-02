@@ -192,7 +192,7 @@ class Ui_frm_step_edit(object):
 
         self.retranslateUi(frm_step_edit)
 
-        self.tab_step.setCurrentIndex(1)
+        self.tab_step.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(frm_step_edit)

@@ -94,38 +94,44 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         self.target_cond_data = []
         self.action_cond_data = {}
         args_vos = self.step[region + "ArgsVOS"]
-        if args_vos is not None:
-            for item in args_vos:
-                field_key = item['fieldKey']
-                if self.is_cond_field(field_key):
-                    continue
 
-                field = self.add_dynamic_field(field_key, item['fieldType'], item['fieldName'])
-                if isinstance(field, QComboBox):
-                    currentText = None
-                    for cb_item in item['robotDataDicts']:
-                        field.addItem(cb_item['dictName'], cb_item['dictCode'])
-                        if hasattr(item,'fieldValue'):
-                            if item['fieldValue'] == cb_item['dictCode']:
-                                currentText = cb_item['dictName']
-                    if currentText is not None:
-                        field.setCurrentText(currentText)
-                    if item['cond'] != '':
-                        field.currentTextChanged.connect(self.on_dynamic_combo_change)
-                        if region == 'action':
-                            self.action_cond_data = json.loads(item['cond'])
-                        else:
-                            self.target_cond_data = json.loads(item['cond'])
-                        self.on_dynamic_combo_change(currentText)
-                else:
-                    if hasattr(item,'fieldValue'):
-                        field.setText(item['fieldValue'])
+        if args_vos is None or len(args_vos) == 0:
+            label = QLabel(self.tab_target)
+            label.setText('操作' + self.action_name)
+            self.fol_target.setWidget(0,  QFormLayout.LabelRole, label)
+            return
+
+        for item in args_vos:
+            field_key = item['fieldKey']
+            if self.is_cond_field(field_key):
+                continue
+
+            field = self.add_dynamic_field(field_key, item['fieldType'], item['fieldName'])
+            if isinstance(field, QComboBox):
+                current_text = None
+                for cb_item in item['robotDataDicts']:
+                    field.addItem(cb_item['dictName'], cb_item['dictCode'])
+                    if 'fieldValue' in item and item['fieldValue'] == cb_item['dictCode']:
+                        current_text = cb_item['dictName']
+                if current_text is not None:
+                    field.setCurrentText(current_text)
+                if item['cond'] != '':
+                    field.currentTextChanged.connect(self.on_dynamic_combo_change)
+                    if region == 'action':
+                        self.action_cond_data = json.loads(item['cond'])
+                    else:
+                        self.target_cond_data = json.loads(item['cond'])
+                    self.on_dynamic_combo_change(current_text)
+            else:
+                if 'fieldValue' in item:
+                    field.setText(item['fieldValue'])
+                    field.editingFinished.connect(self.editing_finished)
 
     def on_dynamic_combo_change(self, arg1):
         combo = None
         dynamic_fields = self.action_fields if self.region == 'action' else self.target_fields
         for f in dynamic_fields:
-            if not isinstance(f, QLabel) and hasattr(f,'currentText') and f.currentText() == arg1:
+            if not isinstance(f, QLabel) and hasattr(f, 'currentText') and f.currentText() == arg1:
                 combo = f
                 break
 
@@ -145,10 +151,10 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                     if isinstance(cond_field, QComboBox) and item['robotDataDicts'] is not None:
                         for cb_item in item['robotDataDicts']:
                             cond_field.addItem(cb_item['dictName'], cb_item['dictCode'])
-                        if hasattr(item,'fieldValue'):
+                        if 'fieldValue' in item:
                             cond_field.setCurrentText(item['fieldValue'])
                     else:
-                        if hasattr(item,'fieldValue'):
+                        if 'fieldValue' in item:
                             cond_field.setText(item['fieldValue'])
 
     def is_cond_field(self, key):
