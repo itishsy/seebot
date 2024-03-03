@@ -10,13 +10,30 @@ from seebot.ide.api import Api
 
 import seebot.utils.sqlite as db
 
+api = Api()
+
 
 class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def __init__(self, parent=None):
         super(FlowConfigWin, self).__init__(parent)
         self.setupUi(self)
+        self.app_code = None
+        self.flow_code = None
+        self.task_code = None
         # self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint)
         self.setFixedSize(self.size())
+        self.tbl_steps.setColumnWidth(0, 360)
+        self.tbl_steps.setColumnWidth(1, 120)
+        self.tbl_args.setColumnWidth(1, 130)
+        self.tbl_args.setColumnWidth(2, 260)
+
+        # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
+
+    def show(self) -> None:
+        super(FlowConfigWin, self).show()
+        self.load_action_tree()
+        self.load_app_data()
+        # self.load_step_data()
         self.btn_save.clicked.connect(self.on_save_click)
         self.btn_run.clicked.connect(self.on_run_click)
         self.btn_debug.clicked.connect(self.on_debug_click)
@@ -28,23 +45,64 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.installEventFilter(self.tableDragEvent)
         self.tbl_steps.dropEvent = self.tableDragEvent.dropEvent
         self.tbl_steps.dragEnterEvent = self.tableDragEvent.dragEnterEvent
-        # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
-
-    def show(self) -> None:
-        super(FlowConfigWin, self).show()
-        self.setWindowTitle("seebot 配置流程【" + self.app_name + "】【" + self.flow_name + "】")
-        self.load_action_tree()
-        self.load_step_data()
-        self.tbl_steps.setColumnWidth(0, 360)
-        self.tbl_steps.setColumnWidth(1, 120)
-        self.tbl_args.setColumnWidth(1, 130)
-        self.tbl_args.setColumnWidth(2, 260)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.close()
-        self.pre_win.show()
+        # self.pre_win.show()
+
+    def load_app_data(self):
+        data = api.find_app()
+        self.cmb_app.clear()
+        self.cmb_app.addItem("==请选择==")
+        self.cmb_flow.clear()
+        self.cmb_flow.addItem("==请选择==")
+        for item in data["data"]:
+            self.cmb_app.addItem(item['appName'], item['appCode'])
+        res = db.query("select value from setting where key='remember_app'")
+        if len(res) > 0:
+            sta = res[0]['value'].split('`')
+            if len(sta) == 3:
+                self.cmb_app.setCurrentText(sta[0])
+                self.on_app_change()
+                self.cmb_flow.setCurrentText(sta[1])
+                self.app_code = self.cmb_flow.currentData()
+                self.cmb_task.setCurrentText(sta[2])
+                self.task_code = self.cmb_task.currentData()
+        self.cmb_app.currentTextChanged.connect(self.on_app_change)
+
+    def on_app_change(self):
+        self.app_code = self.cmb_app.currentData()
+        self.cmb_flow.clear()
+        self.cmb_flow.addItem("==请选择==")
+        self.cmb_task.clear()
+        self.cmb_task.addItem("==请选择==")
+        if self.app_code is not None:
+            data = api.find_flow(self.app_code)
+            for item in data["data"]:
+                self.cmb_flow.addItem(item['flowName'], item['flowCode'])
+            self.cmb_flow.currentIndexChanged.connect(self.on_flow_change)
+
+            data = api.find_task(self.app_code)
+            for item in data["data"]:
+                if item['companyName'] is not None and item['accountNumber'] is not None:
+                    text = item['companyName']+'('+item['accountNumber']+')'
+                    self.cmb_task.addItem(text, item['taskCode'])
+            self.cmb_task.currentIndexChanged.connect(self.on_task_change)
+
+    def on_flow_change(self):
+        self.flow_code = self.cmb_flow.currentData()
+        self.data_mode = 'server'
+        if self.flow_code is not None:
+            self.load_step_data()
+
+    def on_task_change(self):
+        self.task_code = self.cmb_task.currentData()
+        if self.task_code is not None:
+            self.load_task_data()
+
 
     def load_action_tree(self):
+        self.actions = api.find_action()["data"]
         self.trw_actions.setColumnWidth(0, 200)
         self.trw_actions.setHeaderHidden(True)
         group = []
@@ -54,7 +112,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         group_items = []
         for group_name in group:
             top = QTreeWidgetItem()
-            top.setText(0,group_name)
+            top.setText(0, group_name)
             group_items.append(top)
             for a in self.actions:
                 if a['groupName'] == group_name:
@@ -72,7 +130,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.trw_actions.dragLeaveEvent = self.tree_item_drag.dragLeaveEvent
 
     def load_step_data(self):
-        api = Api()
+        self.tbl_steps.setRowCount(0)
         if self.data_mode == 'server':
             data = api.find_step(self.flow_code)
             self.steps = data["data"]
@@ -84,9 +142,13 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
             self.append_row(step)
         self.tbl_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.tbl_steps.customContextMenuRequested.connect(self.show_context_menu)
-        data = api.find_task_args(self.app_code, self.task_code)
-        for item in data["data"]:
-            self.append_args_row(item['formName'],item['argsKey'],item['argsValue'])
+
+    def load_task_data(self):
+        self.tbl_args.setRowCount(0)
+        if self.task_code is not None:
+            data = api.find_task_args(self.app_code, self.task_code)
+            for item in data["data"]:
+                self.append_args_row(item['formName'], item['argsKey'], item['argsValue'])
 
     def show_context_menu(self, pos):
         item = self.tbl_steps.itemAt(pos)
@@ -191,7 +253,7 @@ class TableRowDrag(QTableWidget):
         self.target_row = self.tb.indexAt(event.pos()).row()
         print('drag from tree: row:' + str(self.target_row))
 
-        if hasattr(self,'source_row'):
+        if hasattr(self, 'source_row'):
             if self.target_row == self.source_row:
                 return
 
@@ -211,6 +273,7 @@ class TableRowDrag(QTableWidget):
                 self.tb.setItem(start, 1, item[1])
                 start = start + 1
             self.tb.selectRow(self.target_row)
+            del self.source_row
         else:
             self.tb.selectRow(self.target_row)
             tr_item = self.tr.currentItem()
@@ -258,7 +321,7 @@ class TableRowDrag(QTableWidget):
             items.append(source)
         return items
 
-    def add_step(self, action_code,action_name,rows):
+    def add_step(self, action_code, action_name, rows):
         self.win = editor.StepEditorWin()
         self.win.action_code = action_code
         self.win.action_name = action_name

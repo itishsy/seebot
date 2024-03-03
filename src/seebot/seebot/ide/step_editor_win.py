@@ -106,7 +106,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             if self.is_cond_field(field_key):
                 continue
 
-            field = self.add_dynamic_field(field_key, item['fieldType'], item['fieldName'])
+            field = self.add_dynamic_field(self.region + 'ArgsVOS.' + field_key, item['fieldType'], item['fieldName'])
             if isinstance(field, QComboBox):
                 current_text = ''
                 for cb_item in item['robotDataDicts']:
@@ -124,10 +124,11 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                     else:
                         self.target_cond_data = json.loads(item['cond'])
                     self.on_dynamic_combo_change(current_text)
+                field.currentIndexChanged.connect(self.editing_finished)
             else:
                 if 'fieldValue' in item:
                     field.setText(item['fieldValue'])
-                    field.editingFinished.connect(self.editing_finished)
+                field.editingFinished.connect(self.editing_finished)
 
     def get_cond_data(self):
         args_vos = self.step[self.region + "ArgsVOS"]
@@ -156,7 +157,9 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
             if cond_data is None or cond_data == []:
                 cond_data = self.get_cond_data()
-            show_fields = cond_data[combo.currentData()].split(',')
+            show_fields = []
+            if combo.currentData() in cond_data:
+                show_fields = cond_data[combo.currentData()].split(',')
             current_field_key = combo.objectName().split('_')[1]
             for field in dynamic_fields:
                 if field.objectName().split('_')[1] != current_field_key:
@@ -166,16 +169,19 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             for item in self.step[self.region + 'ArgsVOS']:
                 field_key = item['fieldKey']
                 if field_key in show_fields:
-                    cond_field = self.add_dynamic_field(field_key, item['fieldType'], item['fieldName'])
-                    if isinstance(cond_field, QComboBox) and item['robotDataDicts'] is not None:
-                        for cb_item in item['robotDataDicts']:
-                            cond_field.addItem(cb_item['dictName'], cb_item['dictCode'])
-                        cond_field.addItem('', '')
-                        if 'fieldValue' in item and item['fieldValue'] is not None:
-                            cond_field.setCurrentText(item['fieldValue'])
+                    cond_field = self.add_dynamic_field(self.region + 'ArgsVOS.' + field_key, item['fieldType'], item['fieldName'])
+                    if isinstance(cond_field, QComboBox):
+                        if item['robotDataDicts'] is not None:
+                            for cb_item in item['robotDataDicts']:
+                                cond_field.addItem(cb_item['dictName'], cb_item['dictCode'])
+                            cond_field.addItem('', '')
+                            if 'fieldValue' in item and item['fieldValue'] is not None:
+                                cond_field.setCurrentText(item['fieldValue'])
+                        cond_field.currentIndexChanged.connect(self.editing_finished)
                     else:
                         if 'fieldValue' in item:
                             cond_field.setText(item['fieldValue'])
+                        cond_field.editingFinished.connect(self.editing_finished)
 
     def is_cond_field(self, key):
         cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
@@ -211,20 +217,41 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
 
     def editing_finished(self):
         sender = self.sender()
+        print(sender.objectName())
         fid_name = sender.objectName().replace('fid_', '')
+        fid_name_arr = fid_name.split('.')
+
         if isinstance(sender, QComboBox):
-            self.step[fid_name] = sender.CurrentText()
+            new_val = sender.currentText()
         elif isinstance(sender, QCheckBox):
             if fid_name in ['status']:
-                self.step[fid_name] = 0 if sender.isChecked() else 1
+                new_val = 0 if sender.isChecked() else 1
             else:
-                self.step[fid_name] = 1 if sender.isChecked() else 0
+                new_val = 1 if sender.isChecked() else 0
         else:
-            self.step[fid_name] = sender.text()
+            new_val = sender.text()
+
+        if len(fid_name_arr) > 1:
+            vos_name = fid_name_arr[0]
+            field_key = fid_name_arr[1]
+
+            args_key = vos_name.replace('VOS', '')
+            args = json.loads(self.step[args_key])
+            args[field_key] = new_val
+            self.step[args_key] = json.dumps(args)
+
+            for item in self.step[vos_name]:
+                if item['fieldKey'] == field_key:
+                    item['fieldValue'] = new_val
+                    break
+            print(self.step)
+        else:
+            self.step[fid_name] = new_val
 
     def on_save_click(self):
         self.step_item.setText(self.step['stepName'])
         self.step_item.setData(1, self.step)
+        print(self.step)
         self.close()
 
     def on_run_click(self):

@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QMessageBox
 import urllib.parse as urlparse
 
 from seebot.ide.index import Ui_frm_index
-from seebot.ide.open_app_win import OpenAppWin
+from seebot.ide.flow_config_win import FlowConfigWin
 from seebot.ide.api import Api
 
 import seebot.utils.aes as aes
@@ -43,8 +43,8 @@ class IndexWin(QMainWindow, Ui_frm_index):
                 if self.ckb_remember.isChecked():
                     val = server + '`' + username + '`' + password
                     db.execute("insert into setting(key, value) values('remember_me','"+val+"')")
-                self.win = OpenAppWin()
-                self.win.show()
                 self.close()
+                self.win = FlowConfigWin()
+                self.win.show()
             else:
                 QMessageBox.critical(self, "失败", res)

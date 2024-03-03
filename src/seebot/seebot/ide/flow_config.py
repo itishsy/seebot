@@ -24,7 +24,7 @@ class Ui_frm_flow_config(object):
     def setupUi(self, frm_flow_config):
         if not frm_flow_config.objectName():
             frm_flow_config.setObjectName(u"frm_flow_config")
-        frm_flow_config.resize(863, 840)
+        frm_flow_config.resize(870, 840)
         self.tab_flow = QTabWidget(frm_flow_config)
         self.tab_flow.setObjectName(u"tab_flow")
         self.tab_flow.setGeometry(QRect(330, 70, 531, 711))
@@ -133,7 +133,7 @@ class Ui_frm_flow_config(object):
     # setupUi
 
     def retranslateUi(self, frm_flow_config):
-        frm_flow_config.setWindowTitle(QCoreApplication.translate("frm_flow_config", u"seebot", None))
+        frm_flow_config.setWindowTitle(QCoreApplication.translate("frm_flow_config", u"seebot \u6d41\u7a0b\u914d\u7f6e", None))
         ___qtablewidgetitem = self.tbl_steps.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("frm_flow_config", u"\u6b65\u9aa4\u540d\u79f0", None));
         ___qtablewidgetitem1 = self.tbl_steps.horizontalHeaderItem(1)
