@@ -205,7 +205,7 @@ class Ui_frm_step_edit(object):
         self.tab_step.setTabText(self.tab_step.indexOf(self.tab_target), QCoreApplication.translate("frm_step_edit", u"\u64cd\u4f5c\u5bf9\u8c61", None))
         self.groupBox.setTitle(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u53c2\u6570", None))
         self.Label.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u6210\u529f\u8df3\u8f6c", None))
-        self.fid_skipTo.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u987a\u5e8f\u6267\u884c", None))
+        self.fid_skipTo.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u8df3\u8f49", None))
         self.Label_2.setText(QCoreApplication.translate("frm_step_edit", u"\u8d85\u65f6\u65f6\u95f4", None))
         self.fid_timeout.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"10\u79d2", None))
         self.Label_3.setText(QCoreApplication.translate("frm_step_edit", u"\u8df3\u8fc7\u6b64\u6b65\u9aa4\u6761\u4ef6", None))

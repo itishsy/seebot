@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'flow_config.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QGroupBox, QHeaderView,
-    QPushButton, QSizePolicy, QTabWidget, QTableWidget,
-    QTableWidgetItem, QTreeWidget, QTreeWidgetItem, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QGroupBox,
+    QHeaderView, QLabel, QPushButton, QSizePolicy,
+    QTabWidget, QTableWidget, QTableWidgetItem, QTreeWidget,
+    QTreeWidgetItem, QWidget)
 
 class Ui_frm_flow_config(object):
     def setupUi(self, frm_flow_config):
@@ -26,7 +27,7 @@ class Ui_frm_flow_config(object):
         frm_flow_config.resize(863, 840)
         self.tab_flow = QTabWidget(frm_flow_config)
         self.tab_flow.setObjectName(u"tab_flow")
-        self.tab_flow.setGeometry(QRect(330, 10, 531, 771))
+        self.tab_flow.setGeometry(QRect(330, 70, 531, 711))
         self.tab_flow_step = QWidget()
         self.tab_flow_step.setObjectName(u"tab_flow_step")
         self.tbl_steps = QTableWidget(self.tab_flow_step)
@@ -83,7 +84,7 @@ class Ui_frm_flow_config(object):
         self.btn_debug.setGeometry(QRect(90, 800, 75, 31))
         self.gbx_action = QGroupBox(frm_flow_config)
         self.gbx_action.setObjectName(u"gbx_action")
-        self.gbx_action.setGeometry(QRect(10, 10, 311, 771))
+        self.gbx_action.setGeometry(QRect(10, 70, 311, 711))
         self.trw_actions = QTreeWidget(self.gbx_action)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
@@ -95,6 +96,33 @@ class Ui_frm_flow_config(object):
         self.trw_actions.setDragDropOverwriteMode(True)
         self.trw_actions.setDragDropMode(QAbstractItemView.DragOnly)
         self.trw_actions.setDefaultDropAction(Qt.MoveAction)
+        self.groupBox = QGroupBox(frm_flow_config)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(10, 10, 851, 51))
+        self.lab_app = QLabel(self.groupBox)
+        self.lab_app.setObjectName(u"lab_app")
+        self.lab_app.setGeometry(QRect(10, 20, 53, 15))
+        self.cmb_app = QComboBox(self.groupBox)
+        self.cmb_app.addItem("")
+        self.cmb_app.addItem("")
+        self.cmb_app.setObjectName(u"cmb_app")
+        self.cmb_app.setGeometry(QRect(50, 10, 181, 31))
+        self.lab_flow = QLabel(self.groupBox)
+        self.lab_flow.setObjectName(u"lab_flow")
+        self.lab_flow.setGeometry(QRect(260, 20, 53, 15))
+        self.cmb_flow = QComboBox(self.groupBox)
+        self.cmb_flow.addItem("")
+        self.cmb_flow.addItem("")
+        self.cmb_flow.setObjectName(u"cmb_flow")
+        self.cmb_flow.setGeometry(QRect(300, 10, 191, 31))
+        self.lab_account = QLabel(self.groupBox)
+        self.lab_account.setObjectName(u"lab_account")
+        self.lab_account.setGeometry(QRect(520, 20, 53, 15))
+        self.cmb_task = QComboBox(self.groupBox)
+        self.cmb_task.addItem("")
+        self.cmb_task.addItem("")
+        self.cmb_task.setObjectName(u"cmb_task")
+        self.cmb_task.setGeometry(QRect(560, 10, 281, 31))
 
         self.retranslateUi(frm_flow_config)
 
@@ -122,5 +150,20 @@ class Ui_frm_flow_config(object):
         self.btn_save.setText(QCoreApplication.translate("frm_flow_config", u"\u4fdd\u5b58", None))
         self.btn_debug.setText(QCoreApplication.translate("frm_flow_config", u"\u8c03\u8bd5", None))
         self.gbx_action.setTitle(QCoreApplication.translate("frm_flow_config", u"\u64cd\u4f5c\u6307\u4ee4", None))
+        self.groupBox.setTitle("")
+        self.lab_app.setText(QCoreApplication.translate("frm_flow_config", u"\u5e94\u7528\uff1a", None))
+        self.cmb_app.setItemText(0, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde-\u793e\u4fdd", None))
+        self.cmb_app.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde-\u516c\u79ef\u91d1", None))
+
+        self.lab_flow.setText(QCoreApplication.translate("frm_flow_config", u"\u6d41\u7a0b\uff1a", None))
+        self.cmb_flow.setItemText(0, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u793e\u4fdd\u5355\u5de5\u4f24\u589e\u5458", None))
+        self.cmb_flow.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u793e\u4fdd\u51cf\u5458", None))
+
+        self.cmb_flow.setCurrentText(QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u793e\u4fdd\u5355\u5de5\u4f24\u589e\u5458", None))
+        self.lab_account.setText(QCoreApplication.translate("frm_flow_config", u"\u4efb\u52a1\uff1a", None))
+        self.cmb_task.setItemText(0, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u5357\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123929", None))
+        self.cmb_task.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123923", None))
+
+        self.cmb_task.setCurrentText(QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u5357\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123929", None))
     # retranslateUi
 

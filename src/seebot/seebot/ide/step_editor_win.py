@@ -142,7 +142,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             print(sender.parent().parent())
         combo = None
         dynamic_fields = self.action_fields if self.region == 'action' else self.target_fields
-        if arg1 == '':
+        if arg1 == '' and sender is not None:
             for field in dynamic_fields:
                 if field.objectName().split('_')[1] != sender.objectName().split('_')[1]:
                     field.setParent(None)
@@ -152,9 +152,10 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                 combo = f
                 break
 
-        if combo is not None:
-            # cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
-            cond_data = self.get_cond_data()
+        if combo is not None and combo.currentData() != '':
+            cond_data = self.action_cond_data if self.region == 'action' else self.target_cond_data
+            if cond_data is None or cond_data == []:
+                cond_data = self.get_cond_data()
             show_fields = cond_data[combo.currentData()].split(',')
             current_field_key = combo.objectName().split('_')[1]
             for field in dynamic_fields:
