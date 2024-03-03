@@ -25,6 +25,11 @@ class Ui_frm_flow_config(object):
         if not frm_flow_config.objectName():
             frm_flow_config.setObjectName(u"frm_flow_config")
         frm_flow_config.resize(870, 840)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(frm_flow_config.sizePolicy().hasHeightForWidth())
+        frm_flow_config.setSizePolicy(sizePolicy)
         self.tab_flow = QTabWidget(frm_flow_config)
         self.tab_flow.setObjectName(u"tab_flow")
         self.tab_flow.setGeometry(QRect(330, 70, 531, 711))

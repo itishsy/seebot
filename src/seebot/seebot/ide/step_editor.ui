@@ -136,18 +136,24 @@
      <property name="title">
       <string>执行参数</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
      <widget class="QWidget" name="formLayoutWidget">
       <property name="geometry">
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>411</width>
+        <width>391</width>
         <height>152</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
        <property name="labelAlignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="formAlignment">
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="Label">
@@ -242,7 +248,7 @@
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>411</width>
+        <width>391</width>
         <height>121</height>
        </rect>
       </property>

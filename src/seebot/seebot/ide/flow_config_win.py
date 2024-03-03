@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QApplication, QWidget, QMainWindow, QTableWidget, QTreeWidget, QTableWidgetItem, QLabel, QTreeWidgetItem, QMessageBox, QMenu)
 from PySide6.QtCore import (Qt, QEvent, QObject, QPoint, QByteArray, QDataStream, QIODevice, QMimeData)
-from PySide6.QtGui import QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, QDrag, QPixmap, QPainter, QPen
+from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, QDrag, QPixmap, QPainter, QPen
 
 from seebot.ide.flow_config import Ui_frm_flow_config
 import seebot.ide.flow_debug_win as debug
@@ -21,7 +21,11 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.flow_code = None
         self.task_code = None
         # self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint)
-        self.setFixedSize(self.size())
+        screen_height = QGuiApplication.screenAt(QCursor().pos()).geometry().height()
+        if self.size().height() > screen_height:
+            self.setFixedSize(self.size().width(), screen_height - 60)
+        else:
+            self.setFixedSize(self.size())
         self.tbl_steps.setColumnWidth(0, 360)
         self.tbl_steps.setColumnWidth(1, 120)
         self.tbl_args.setColumnWidth(1, 130)
