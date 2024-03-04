@@ -81,16 +81,21 @@
     </rect>
    </property>
    <property name="currentText">
-    <string>https://rpaadmin.seebon.com</string>
+    <string>http://192.168.0.68:9999</string>
    </property>
    <item>
     <property name="text">
-     <string>https://rpaadmin.seebon.com</string>
+     <string>http://192.168.0.68:9999</string>
     </property>
    </item>
    <item>
     <property name="text">
      <string>http://192.168.0.99:9999</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>https://rpaadmin.seebon.com</string>
     </property>
    </item>
   </widget>

@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QApplication, QWidget, QMainWindow, QTableWidget, QTreeWidget, QTableWidgetItem, QLabel, QTreeWidgetItem, QMessageBox, QMenu)
 from PySide6.QtCore import (Qt, QEvent, QObject, QPoint, QByteArray, QDataStream, QIODevice, QMimeData)
-from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, QDrag, QPixmap, QPainter, QPen
+from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, \
+    QDrag, QPixmap, QPainter, QPen, QBrush, QColor
 
 from seebot.ide.flow_config import Ui_frm_flow_config
 import seebot.ide.flow_debug_win as debug
@@ -9,8 +10,6 @@ import seebot.ide.step_editor_win as editor
 from seebot.ide.api import Api
 
 import seebot.utils.sqlite as db
-
-api = Api()
 
 
 class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
@@ -35,10 +34,13 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
 
     def show(self) -> None:
         super(FlowConfigWin, self).show()
+        self.setWindowTitle('seebot 配置流程 【' + self.server + '】')
+        self.api = Api()
         self.load_action_tree()
         self.load_app_data()
         # self.load_step_data()
         self.btn_save.clicked.connect(self.on_save_click)
+        self.btn_reload.clicked.connect(self.load_step_data)
         self.btn_run.clicked.connect(self.on_run_click)
         self.btn_debug.clicked.connect(self.on_debug_click)
         self.tbl_steps.setAcceptDrops(True)
@@ -55,12 +57,12 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         # self.pre_win.show()
 
     def load_app_data(self):
-        data = api.find_app()
+        apps = self.api.find_app()
         self.cmb_app.clear()
         self.cmb_app.addItem("==请选择==")
         self.cmb_flow.clear()
         self.cmb_flow.addItem("==请选择==")
-        for item in data["data"]:
+        for item in apps:
             self.cmb_app.addItem(item['appName'], item['appCode'])
         res = db.query("select value from setting where key='remember_app'")
         if len(res) > 0:
@@ -81,12 +83,12 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.cmb_task.clear()
         self.cmb_task.addItem("==请选择==")
         if self.app_code is not None:
-            data = api.find_flow(self.app_code)
+            data = self.api.find_flow(self.app_code)
             for item in data["data"]:
                 self.cmb_flow.addItem(item['flowName'], item['flowCode'])
             self.cmb_flow.currentIndexChanged.connect(self.on_flow_change)
 
-            data = api.find_task(self.app_code)
+            data = self.api.find_task(self.app_code)
             for item in data["data"]:
                 if item['companyName'] is not None and item['accountNumber'] is not None:
                     text = item['companyName']+'('+item['accountNumber']+')'
@@ -98,15 +100,21 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.data_mode = 'server'
         if self.flow_code is not None:
             self.load_step_data()
+            self.update_remember_app()
 
     def on_task_change(self):
         self.task_code = self.cmb_task.currentData()
         if self.task_code is not None:
             self.load_task_data()
+            self.update_remember_app()
 
+    def update_remember_app(self):
+        db.execute("delete from setting where key='remember_app'")
+        val = self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText()
+        db.execute("insert into setting(key, value) values('remember_app','" + val + "')")
 
     def load_action_tree(self):
-        self.actions = api.find_action()["data"]
+        self.actions = self.api.find_action()["data"]
         self.trw_actions.setColumnWidth(0, 200)
         self.trw_actions.setHeaderHidden(True)
         group = []
@@ -136,7 +144,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def load_step_data(self):
         self.tbl_steps.setRowCount(0)
         if self.data_mode == 'server':
-            data = api.find_step(self.flow_code)
+            data = self.api.find_step(self.flow_code)
             self.steps = data["data"]
         else:
             sql = "SELECT step_code as stepCode, step_name as stepName, action_code as actionCode, number FROM flow_step"
@@ -150,7 +158,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def load_task_data(self):
         self.tbl_args.setRowCount(0)
         if self.task_code is not None:
-            data = api.find_task_args(self.app_code, self.task_code)
+            data = self.api.find_task_args(self.app_code, self.task_code)
             for item in data["data"]:
                 self.append_args_row(item['formName'], item['argsKey'], item['argsValue'])
 
@@ -181,6 +189,9 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
             QMessageBox.information(self, "操作", "删除")
 
     def append_row(self, step):
+        if 'stepName' not in step:
+            return
+
         name = step['stepName']
         action = self.get_action_by_code(step['actionCode'])
         rows = self.tbl_steps.rowCount()
@@ -226,7 +237,18 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
                 return act
 
     def on_save_click(self):
-        print(self.steps)
+        steps = []
+        row_count = self.tbl_steps.rowCount()
+        for i in range(row_count):
+            data = self.tbl_steps.item(i, 0).data(1)
+            del data['actionArgsVOS']
+            del data['targetArgsVOS']
+            data['number'] = i + 1
+            steps.append(data)
+        print(steps)
+        res = self.api.save_flow_steps(self.flow_code, steps)
+        QMessageBox.information(self, "结果", '保存成功' if res else '保存失败')
+        self.load_step_data()
 
     def on_run_click(self):
         self.win = running.FlowRunningWin()
@@ -276,8 +298,13 @@ class TableRowDrag(QTableWidget):
                 self.tb.setItem(start, 0, item[0])
                 self.tb.setItem(start, 1, item[1])
                 start = start + 1
-            self.tb.selectRow(self.target_row)
+            brush = QBrush(QColor(255, 255, 204))
+            self.tb.item(self.target_row, 0).setBackground(brush)
+            self.tb.item(self.target_row, 1).setBackground(brush)
+            # self.tb.selectRow(self.target_row)
+            self.tb.clearSelection()
             del self.source_row
+            self.refresh_number()
         else:
             self.tb.selectRow(self.target_row)
             tr_item = self.tr.currentItem()
@@ -330,8 +357,42 @@ class TableRowDrag(QTableWidget):
         self.win.action_code = action_code
         self.win.action_name = action_name
         self.win.number = rows
+        self.win.base = self
         self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.win.show()
+
+    def add_step_ok(self):
+        if hasattr(self, 'win'):
+            step = self.win.step
+            new_number = step['number']
+            if new_number == self.win.number + 1:
+                row_count = self.tb.rowCount()
+                self.tb.insertRow(row_count)
+                for i in reversed(range(new_number, row_count)):
+                    self.tb.setItem(i+1, 0, self.tb.takeItem(i, 0))
+                    self.tb.setItem(i+1, 1, self.tb.takeItem(i, 1))
+
+                brush = QBrush(QColor(255, 204, 255))
+                item_0 = QTableWidgetItem(str(step['stepName']))
+                item_0.setData(1, step)
+                item_0.setBackground(brush)
+                self.tb.setItem(new_number, 0, item_0)
+                item_1 = QTableWidgetItem(str(self.win.action_name))
+                item_1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                item_1.setBackground(brush)
+                self.tb.setItem(new_number, 1, item_1)
+                self.tb.clearSelection()
+                print(self.win.number)
+                print(step['number'])
+                self.refresh_number()
+
+    def refresh_number(self):
+        row_count = self.tb.rowCount()
+        for i in range(row_count):
+            data = self.tb.item(i, 0).data(1)
+            data['number'] = i + 1
+            self.tb.item(i, 0).setData(1, data)
+
 
 class TreeItemDrag(QTreeWidget):
     def tree(self, tree):

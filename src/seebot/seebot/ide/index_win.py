@@ -45,6 +45,7 @@ class IndexWin(QMainWindow, Ui_frm_index):
                     db.execute("insert into setting(key, value) values('remember_me','"+val+"')")
                 self.close()
                 self.win = FlowConfigWin()
+                self.win.server = server
                 self.win.show()
             else:
                 QMessageBox.critical(self, "失败", res)

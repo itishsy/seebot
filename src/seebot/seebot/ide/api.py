@@ -20,10 +20,39 @@ class Api:
         return data.get("message")
 
     def find_app(self):
-        url = server + "/api/robot/app/all"
-        res = httpUtil.post(url=url, headers={"Authorization": token})
+        url = server + "/api/robot/app/getAppData"
+        params = {
+                "page": 1,
+                "start": 0,
+                "size": 1000,
+                "query": [
+                    {
+                        "property": "keyWord",
+                        "value": ""
+                    },
+                    {
+                        "property": "serviceItemList",
+                        "value": []
+                    },
+                    {
+                        "property": "businessList",
+                        "value": []
+                    },
+                    {
+                        "property": "onlineList",
+                        "value": []
+                    },
+                    {
+                        "property": "appStatusList",
+                        "value": []
+                    }
+                ],
+                "sidx": "",
+                "sort": ""
+            }
+        res = httpUtil.post(url=url,param=params, headers={"Authorization": token})
         data = json.loads(res.content)
-        return data
+        return data["data"]['rows']
 
     def find_flow(self, app_code):
         url = server + "/api/robot/flow/list"
@@ -66,3 +95,9 @@ class Api:
         res = httpUtil.post(url=url, headers={"Authorization": token})
         data = json.loads(res.content)
         return data
+
+    def save_flow_steps(self, flow_code, flow_steps):
+        url = server + "/api/robot/flow/step/save?flowCode=" + flow_code
+        res = httpUtil.post(url=url, param=flow_steps, headers={"Authorization": token})
+        data = json.loads(res.content)
+        return data['data']

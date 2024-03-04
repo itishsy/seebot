@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'flow_config.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_frm_flow_config(object):
         if not frm_flow_config.objectName():
             frm_flow_config.setObjectName(u"frm_flow_config")
         frm_flow_config.resize(870, 840)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(frm_flow_config.sizePolicy().hasHeightForWidth())
@@ -47,7 +47,7 @@ class Ui_frm_flow_config(object):
         __qtablewidgetitem1.setFont(font);
         self.tbl_steps.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         self.tbl_steps.setObjectName(u"tbl_steps")
-        self.tbl_steps.setGeometry(QRect(0, 0, 521, 741))
+        self.tbl_steps.setGeometry(QRect(0, 0, 521, 681))
         self.tbl_steps.setMouseTracking(True)
         self.tbl_steps.setAcceptDrops(True)
         self.tbl_steps.setMidLineWidth(1)
@@ -73,7 +73,7 @@ class Ui_frm_flow_config(object):
         __qtablewidgetitem4 = QTableWidgetItem()
         self.tbl_args.setHorizontalHeaderItem(2, __qtablewidgetitem4)
         self.tbl_args.setObjectName(u"tbl_args")
-        self.tbl_args.setGeometry(QRect(0, 0, 521, 741))
+        self.tbl_args.setGeometry(QRect(0, 0, 521, 681))
         self.tbl_args.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tbl_args.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tbl_args.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -83,7 +83,7 @@ class Ui_frm_flow_config(object):
         self.btn_run.setGeometry(QRect(10, 800, 75, 31))
         self.btn_save = QPushButton(frm_flow_config)
         self.btn_save.setObjectName(u"btn_save")
-        self.btn_save.setGeometry(QRect(780, 800, 75, 31))
+        self.btn_save.setGeometry(QRect(700, 800, 75, 31))
         self.btn_debug = QPushButton(frm_flow_config)
         self.btn_debug.setObjectName(u"btn_debug")
         self.btn_debug.setGeometry(QRect(90, 800, 75, 31))
@@ -95,7 +95,7 @@ class Ui_frm_flow_config(object):
         __qtreewidgetitem.setText(0, u"1");
         self.trw_actions.setHeaderItem(__qtreewidgetitem)
         self.trw_actions.setObjectName(u"trw_actions")
-        self.trw_actions.setGeometry(QRect(10, 30, 291, 731))
+        self.trw_actions.setGeometry(QRect(10, 20, 291, 681))
         self.trw_actions.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.trw_actions.setDragEnabled(True)
         self.trw_actions.setDragDropOverwriteMode(True)
@@ -128,6 +128,9 @@ class Ui_frm_flow_config(object):
         self.cmb_task.addItem("")
         self.cmb_task.setObjectName(u"cmb_task")
         self.cmb_task.setGeometry(QRect(560, 10, 281, 31))
+        self.btn_reload = QPushButton(frm_flow_config)
+        self.btn_reload.setObjectName(u"btn_reload")
+        self.btn_reload.setGeometry(QRect(780, 800, 75, 31))
 
         self.retranslateUi(frm_flow_config)
 
@@ -170,5 +173,6 @@ class Ui_frm_flow_config(object):
         self.cmb_task.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123923", None))
 
         self.cmb_task.setCurrentText(QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u5357\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123929", None))
+        self.btn_reload.setText(QCoreApplication.translate("frm_flow_config", u"\u5237\u65b0", None))
     # retranslateUi
 
