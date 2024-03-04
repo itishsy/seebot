@@ -1,7 +1,7 @@
 from PySide6.QtCore import QVariantAnimation
 from PySide6.QtSql import (QSqlDatabase, QSqlQuery)
 
-db_name = "D:\\sqlite\\seebot.db"
+db_name = "D:\\seebot\\sqlite\\seebot.db"
 db = QSqlDatabase.addDatabase("QSQLITE")
 db.setDatabaseName(db_name)
 
