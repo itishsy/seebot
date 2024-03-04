@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import (QApplication, QWidget, QMainWindow, QTableWidget, QTreeWidget, QTableWidgetItem, QLabel, QTreeWidgetItem, QMessageBox, QMenu)
-from PySide6.QtCore import (Qt, QEvent, QObject, QPoint, QByteArray, QDataStream, QIODevice, QMimeData)
+from PySide6.QtWidgets import (QApplication, QWidget, QMainWindow,  QTableWidget, QTreeWidget, QTableWidgetItem, QLabel, QTreeWidgetItem, QMessageBox, QMenu)
+from PySide6.QtCore import (Qt, QEvent, QObject, QPoint, QByteArray, QDataStream, QModelIndex,QIODevice, QMimeData)
 from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, \
     QDrag, QPixmap, QPainter, QPen, QBrush, QColor
 
@@ -10,7 +10,6 @@ import seebot.ide.step_editor_win as editor
 from seebot.ide.api import Api
 
 import seebot.utils.sqlite as db
-
 
 class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def __init__(self, parent=None):
@@ -170,8 +169,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         menu = QMenu(self.tbl_steps)
         edit_action = menu.addAction('编辑')
         menu.addSeparator()
-        add_action = menu.addAction('插入')
-        menu.addSeparator()
+        run_to_action = menu.addAction('运行到此步骤')
         run_this_action = menu.addAction('运行此步骤')
         run_from_action = menu.addAction('此步骤开始运行')
         menu.addSeparator()
@@ -179,14 +177,16 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         action = menu.exec(self.tbl_steps.viewport().mapToGlobal(pos))
         if action == edit_action:
             self.on_edit_click()
-        elif action == add_action:
-            self.on_edit_click()
+        elif action == run_to_action:
+            QMessageBox.information(self, "操作", "运行到此步骤")
         elif action == run_this_action:
             QMessageBox.information(self, "操作", "运行此步骤")
         elif action == run_from_action:
-            QMessageBox.information(self, "操作", "此处开始运行")
+            QMessageBox.information(self, "操作", "此步骤开始运行")
         elif action == delete_action:
-            QMessageBox.information(self, "操作", "删除")
+            idx = self.tbl_steps.selectedIndexes()
+            row = idx[0].row().real
+            self.tbl_steps.removeRow(row)
 
     def append_row(self, step):
         if 'stepName' not in step:
