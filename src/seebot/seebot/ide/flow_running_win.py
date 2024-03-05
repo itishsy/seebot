@@ -13,4 +13,3 @@ class FlowRunningWin(QMainWindow, Ui_frm_flow_running):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.close()
-        self.pre_win.show()

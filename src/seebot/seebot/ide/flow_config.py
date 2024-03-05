@@ -173,7 +173,7 @@ class Ui_frm_flow_config(object):
         self.cmb_flow.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u793e\u4fdd\u51cf\u5458", None))
 
         self.cmb_flow.setCurrentText(QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u793e\u4fdd\u5355\u5de5\u4f24\u589e\u5458", None))
-        self.lab_account.setText(QCoreApplication.translate("frm_flow_config", u"\u4efb\u52a1\uff1a", None))
+        self.lab_account.setText(QCoreApplication.translate("frm_flow_config", u"\u53c2\u6570\uff1a", None))
         self.cmb_task.setItemText(0, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u5357\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123929", None))
         self.cmb_task.setItemText(1, QCoreApplication.translate("frm_flow_config", u"\u5e7f\u5dde\u4ed5\u90a6\u4eba\u529b\u8d44\u6e90\u6709\u9650\u516c\u53f8-123923", None))
 

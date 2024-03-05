@@ -50,6 +50,8 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         setattr(self.tbl_steps, 'changed', False)
 
     def closeEvent(self, event: QCloseEvent) -> None:
+        if hasattr(self, 'win'):
+            self.win.close()
         self.close()
         # self.pre_win.show()
 
@@ -244,12 +246,10 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
 
     def on_run_click(self):
         self.win = running.FlowRunningWin()
-        self.win.pre_win = self
-        self.hide()
         screen = QApplication.primaryScreen().geometry()
         x = screen.width() - self.win.frameGeometry().width()
         y = screen.height() - self.win.frameGeometry().height()
-        self.win.move(x, y)
+        self.win.move(x, 0)
         self.win.show()
 
     def on_sync_click(self):

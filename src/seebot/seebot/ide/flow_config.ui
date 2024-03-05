@@ -324,7 +324,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>任务：</string>
+     <string>参数：</string>
     </property>
    </widget>
    <widget class="QComboBox" name="cmb_task">
