@@ -4,12 +4,9 @@ from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMo
     QDrag, QPixmap, QPainter, QPen, QBrush, QColor
 
 from seebot.ide.flow_config import Ui_frm_flow_config
-import seebot.ide.flow_debug_win as debug
 import seebot.ide.flow_running_win as running
 import seebot.ide.step_editor_win as editor
-from seebot.ide.api import Api
 
-import seebot.utils.sqlite as db
 
 class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def __init__(self, parent=None):
@@ -28,51 +25,50 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.setColumnWidth(1, 120)
         self.tbl_args.setColumnWidth(1, 130)
         self.tbl_args.setColumnWidth(2, 260)
-
+        self.btn_sync.setStyleSheet("color:" + QColor(255, 51, 204).name())
         # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
 
     def show(self) -> None:
         super(FlowConfigWin, self).show()
-        self.setWindowTitle('seebot 配置流程 【' + self.server + '】')
-        self.api = Api()
+        self.setWindowTitle('seebot-ide 连接到 ' + self.service.server)
+        self.btn_sync.hide()
         self.load_action_tree()
         self.load_app_data()
-        # self.load_step_data()
         self.btn_save.clicked.connect(self.on_save_click)
         self.btn_reload.clicked.connect(self.load_step_data)
         self.btn_run.clicked.connect(self.on_run_click)
-        self.btn_debug.clicked.connect(self.on_debug_click)
+        self.btn_sync.clicked.connect(self.on_sync_click)
         self.tbl_steps.setAcceptDrops(True)
         self.tbl_steps.doubleClicked.connect(self.on_edit_click)
         self.tableDragEvent = TableRowDrag()
         self.tableDragEvent.table(self.tbl_steps)
         self.tableDragEvent.tree(self.trw_actions)
+        self.tableDragEvent.service(self.service)
         self.tbl_steps.installEventFilter(self.tableDragEvent)
         self.tbl_steps.dropEvent = self.tableDragEvent.dropEvent
         self.tbl_steps.dragEnterEvent = self.tableDragEvent.dragEnterEvent
+        setattr(self.tbl_steps, 'changed', False)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.close()
         # self.pre_win.show()
 
     def load_app_data(self):
-        apps = self.api.find_app()
+        apps = self.service.find_app()
         self.cmb_app.clear()
         self.cmb_app.addItem("==请选择==")
         self.cmb_flow.clear()
         self.cmb_flow.addItem("==请选择==")
         for item in apps:
             self.cmb_app.addItem(item['appName'], item['appCode'])
-        res = db.query("select value from setting where key='remember_app'")
-        if len(res) > 0:
-            sta = res[0]['value'].split('`')
-            if len(sta) == 3:
-                self.cmb_app.setCurrentText(sta[0])
-                self.on_app_change()
-                self.cmb_flow.setCurrentText(sta[1])
-                self.app_code = self.cmb_flow.currentData()
-                self.cmb_task.setCurrentText(sta[2])
-                self.task_code = self.cmb_task.currentData()
+        res = self.service.find_setting('remember_app').split('`')
+        if len(res) == 3:
+            self.cmb_app.setCurrentText(res[0])
+            self.on_app_change()
+            self.cmb_flow.setCurrentText(res[1])
+            self.app_code = self.cmb_flow.currentData()
+            self.cmb_task.setCurrentText(res[2])
+            self.task_code = self.cmb_task.currentData()
         self.cmb_app.currentTextChanged.connect(self.on_app_change)
 
     def on_app_change(self):
@@ -82,12 +78,12 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.cmb_task.clear()
         self.cmb_task.addItem("==请选择==")
         if self.app_code is not None:
-            data = self.api.find_flow(self.app_code)
+            data = self.service.find_flow(self.app_code)
             for item in data["data"]:
                 self.cmb_flow.addItem(item['flowName'], item['flowCode'])
             self.cmb_flow.currentIndexChanged.connect(self.on_flow_change)
 
-            data = self.api.find_task(self.app_code)
+            data = self.service.find_task(self.app_code)
             for item in data["data"]:
                 if item['companyName'] is not None and item['accountNumber'] is not None:
                     text = item['companyName']+'('+item['accountNumber']+')'
@@ -99,21 +95,16 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.data_mode = 'server'
         if self.flow_code is not None:
             self.load_step_data()
-            self.update_remember_app()
+            self.service.upset_setting('remember_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
 
     def on_task_change(self):
         self.task_code = self.cmb_task.currentData()
         if self.task_code is not None:
             self.load_task_data()
-            self.update_remember_app()
-
-    def update_remember_app(self):
-        db.execute("delete from setting where key='remember_app'")
-        val = self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText()
-        db.execute("insert into setting(key, value) values('remember_app','" + val + "')")
+            self.service.upset_setting('remember_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
 
     def load_action_tree(self):
-        self.actions = self.api.find_action()["data"]
+        self.actions = self.service.find_action()["data"]
         self.trw_actions.setColumnWidth(0, 200)
         self.trw_actions.setHeaderHidden(True)
         group = []
@@ -142,22 +133,21 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
 
     def load_step_data(self):
         self.tbl_steps.setRowCount(0)
-        if self.data_mode == 'server':
-            data = self.api.find_step(self.flow_code)
-            self.steps = data["data"]
-        else:
-            sql = "SELECT step_code as stepCode, step_name as stepName, action_code as actionCode, number FROM flow_step"
-            self.steps = db.query(sql)
-
+        self.steps, local = self.service.find_step(self.flow_code)
         for step in self.steps:
             self.append_row(step)
         self.tbl_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.tbl_steps.customContextMenuRequested.connect(self.show_context_menu)
+        if local:
+            self.btn_sync.show()
+        else:
+            self.btn_sync.hide()
 
     def load_task_data(self):
+        setattr(self.tbl_steps, 'changed', False)
         self.tbl_args.setRowCount(0)
         if self.task_code is not None:
-            data = self.api.find_task_args(self.app_code, self.task_code)
+            data = self.service.find_task_args(self.app_code, self.task_code)
             for item in data["data"]:
                 self.append_args_row(item['formName'], item['argsKey'], item['argsValue'])
 
@@ -187,6 +177,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
             idx = self.tbl_steps.selectedIndexes()
             row = idx[0].row().real
             self.tbl_steps.removeRow(row)
+            self.tbl_steps.changed = False
 
     def append_row(self, step):
         if 'stepName' not in step:
@@ -203,6 +194,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         item_type.setToolTip(str(action['comment']))
         item_type.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         self.tbl_steps.setItem(rows, 1, item_type)
+        self.tbl_steps.changed = True
 
     def append_args_row(self, type, key, value):
         rows = self.tbl_args.rowCount()
@@ -219,6 +211,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         if items:
             self.win = editor.StepEditorWin()
             self.win.step = items[0].data(1)
+            self.win.base = self.tbl_steps
             self.win.action_name = items[1].text()
             self.win.step_item = items[0]
             self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
@@ -237,18 +230,17 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
                 return act
 
     def on_save_click(self):
-        steps = []
-        row_count = self.tbl_steps.rowCount()
-        for i in range(row_count):
-            data = self.tbl_steps.item(i, 0).data(1)
-            del data['actionArgsVOS']
-            del data['targetArgsVOS']
-            data['number'] = i + 1
-            steps.append(data)
-        print(steps)
-        res = self.api.save_flow_steps(self.flow_code, steps)
-        QMessageBox.information(self, "结果", '保存成功' if res else '保存失败')
-        self.load_step_data()
+        if self.tbl_steps.changed:
+            steps = []
+            row_count = self.tbl_steps.rowCount()
+            for i in range(row_count):
+                data = self.tbl_steps.item(i, 0).data(1)
+                data['number'] = i + 1
+                steps.append(data)
+            print(steps)
+            res = self.service.save_flow_steps(self.flow_code, steps)
+            QMessageBox.information(self, "结果", '保存成功' if res else '保存失败')
+            self.load_step_data()
 
     def on_run_click(self):
         self.win = running.FlowRunningWin()
@@ -260,11 +252,11 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.win.move(x, y)
         self.win.show()
 
-    def on_debug_click(self):
-        self.win = debug.FlowDebugWin()
-        self.win.pre_win = self
-        self.hide()
-        self.win.show()
+    def on_sync_click(self):
+        res = self.service.sync_flow_steps(self.flow_code)
+        if res:
+            self.load_step_data()
+        QMessageBox.information(self, "结果", '同步成功' if res else '同步失败')
 
 
 class TableRowDrag(QTableWidget):
@@ -275,10 +267,14 @@ class TableRowDrag(QTableWidget):
     def tree(self, tree):
         self.tr = tree
 
+    def service(self, service):
+        self.service = service
+
     def dropEvent(self, event: QDropEvent) -> None:
         self.target_row = self.tb.indexAt(event.pos()).row()
-        print('drag from tree: row:' + str(self.target_row))
+        # print('drag from tree: row:' + str(self.target_row))
 
+        self.tb.changed = True
         if hasattr(self, 'source_row'):
             if self.target_row == self.source_row:
                 return
@@ -298,7 +294,7 @@ class TableRowDrag(QTableWidget):
                 self.tb.setItem(start, 0, item[0])
                 self.tb.setItem(start, 1, item[1])
                 start = start + 1
-            brush = QBrush(QColor(255, 255, 204))
+            brush = QBrush(QColor(255, 204, 204))
             self.tb.item(self.target_row, 0).setBackground(brush)
             self.tb.item(self.target_row, 1).setBackground(brush)
             # self.tb.selectRow(self.target_row)
@@ -354,12 +350,22 @@ class TableRowDrag(QTableWidget):
 
     def add_step(self, action_code, action_name, rows):
         self.win = editor.StepEditorWin()
-        self.win.action_code = action_code
+        self.win.step = self.init_step(action_code, rows)
         self.win.action_name = action_name
         self.win.number = rows
         self.win.base = self
         self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.win.show()
+
+    def init_step(self, action_code, number):
+        target_args = self.service.find_target_args(action_code)
+        action_args = self.service.find_action_args(action_code)
+        return {'id': None, 'flowCode': None, 'groupCode': None, 'stepCode': None, 'stepName': '',
+                'actionCode': action_code, 'actionArgs': '{}', 'targetArgs': '{}', 'number': number,
+                'level': 1, 'status': 1, 'failedRetry': None, 'failedStrategy': 0, 'failedSkipTo': '',
+                'skipTo': '登录成功?', 'falseSkipTo': None, 'skipCondition': '', 'waitBefore': None,
+                'waitAfter': None, 'timeout': 10, 'type': None, 'openEdit': None,
+                'actionArgsVOS': action_args["data"], 'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
 
     def add_step_ok(self):
         if hasattr(self, 'win'):
@@ -385,6 +391,7 @@ class TableRowDrag(QTableWidget):
                 print(self.win.number)
                 print(step['number'])
                 self.refresh_number()
+                self.tb.changed = True
 
     def refresh_number(self):
         row_count = self.tb.rowCount()

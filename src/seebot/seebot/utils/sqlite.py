@@ -6,10 +6,23 @@ db = QSqlDatabase.addDatabase("QSQLITE")
 db.setDatabaseName(db_name)
 
 
-def query(sql):
+def query(sql, args=None):
+    """
+    使用参数
+    :param sql: 使用参数 :id
+    :param args: {'id':1}
+    :return:
+    """
     result = []
     if db.open():
-        q = QSqlQuery(sql)
+        if args is None:
+            q = QSqlQuery(sql)
+        else:
+            q = QSqlQuery()
+            q.prepare(sql)
+            for key in args:
+                q.bindValue(":" + key, args[key])  # 绑定参数值
+            q.exec()
         while q.next():
             row = {}
             for i in range(q.record().count()):
@@ -21,10 +34,16 @@ def query(sql):
     return result
 
 
-def execute(sql):
+def execute(sql, args=None):
     if db.open():
-        q = QSqlQuery()
-        q.exec(sql)
+        if args is None:
+            q = QSqlQuery(sql)
+        else:
+            q = QSqlQuery()
+            q.prepare(sql)
+            for key in args:
+                q.bindValue(":" + key, args[key])  # 绑定参数值
+        q.exec()
         db.close()
 
 

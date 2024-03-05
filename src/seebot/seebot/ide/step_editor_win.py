@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QFormLayout, QComboB
 from PySide6.QtCore import Qt, QObject
 from PySide6.QtGui import QBrush, QColor
 
-from seebot.ide.api import Api
 from seebot.ide.step_editor import Ui_frm_step_edit
 import json
 
@@ -27,26 +26,14 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             self.setWindowTitle('编辑步骤 【' + self.action_name + '】')
         else:
             self.setWindowTitle('新增步骤 【' + self.action_name + '】')
-            self.step = self.init_step()
+        self.ori_step = self.step
         self.load_step_data()
         self.fetch_cond_data()
         self.load_dynamic_data('target')
         self.load_dynamic_data('action')
 
-    def init_step(self):
-        api = Api()
-        target_args = api.find_target_args(self.action_code)
-        action_args = api.find_action_args(self.action_code)
-        return {'id': None, 'flowCode': None, 'groupCode': None, 'stepCode': None, 'stepName': '',
-                'actionCode': self.action_code, 'actionArgs': '{}', 'targetArgs': '{}', 'number': self.number,
-                'level': 1, 'status': 1, 'failedRetry': None, 'failedStrategy': 0, 'failedSkipTo': '',
-                'skipTo': '登录成功?', 'falseSkipTo': None, 'skipCondition': '', 'waitBefore': None,
-                'waitAfter': None, 'timeout': 10, 'type': None, 'openEdit': None,
-                'actionArgsVOS': action_args["data"], 'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
-
     def load_step_data(self):
         print(self.step)
-
         for key in self.step.keys():
             fid_name = "fid_"+key
             if hasattr(self, fid_name):
@@ -212,11 +199,11 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         else:
             new_val = sender.text()
 
-        if self.changed_nothing:
-            if hasattr(self, 'step_item'):
-                ori_step = self.step_item.data(1)
-            else:
-                ori_step = self.init_step()
+        # if self.changed_nothing:
+        #     if hasattr(self, 'step_item'):
+        #         ori_step = self.step_item.data(1)
+        #     else:
+        #         ori_step = self.init_step()
 
         if len(fid_name_arr) > 1:
             vos_name = fid_name_arr[0]
@@ -228,7 +215,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             self.step[args_key] = json.dumps(args, ensure_ascii=False)
 
             if self.changed_nothing:
-                ori_args = json.loads(ori_step[args_key])
+                ori_args = json.loads(self.ori_step[args_key])
                 self.changed_nothing = ori_args[field_key] == new_val
 
             for item in self.step[vos_name]:
@@ -238,7 +225,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         else:
             self.step[fid_name] = new_val
             if self.changed_nothing:
-                self.changed_nothing = ori_step[fid_name] == new_val
+                self.changed_nothing = self.ori_step[fid_name] == new_val
 
     def on_save_click(self):
         if self.changed_nothing:
@@ -250,6 +237,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             self.step_item.setData(1, self.step)
             brush = QBrush(QColor(255, 255, 204))
             self.step_item.setBackground(brush)
+            self.base.changed = True
             print(self.step)
         else:
             self.step['number'] = self.step['number'] + 1

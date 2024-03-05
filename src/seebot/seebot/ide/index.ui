@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>394</width>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>seebot 登入</string>
+   <string>seebot-ide</string>
   </property>
   <widget class="QLineEdit" name="inp_password">
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>150</y>
+     <y>130</y>
      <width>251</width>
      <height>31</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>110</y>
+     <y>90</y>
      <width>53</width>
      <height>15</height>
     </rect>
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>100</y>
+     <y>80</y>
      <width>251</width>
      <height>31</height>
     </rect>
@@ -62,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>160</y>
+     <y>140</y>
      <width>53</width>
      <height>15</height>
     </rect>
@@ -75,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>50</y>
+     <y>30</y>
      <width>251</width>
      <height>31</height>
     </rect>
@@ -103,7 +103,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>60</y>
+     <y>40</y>
      <width>53</width>
      <height>15</height>
     </rect>
@@ -116,20 +116,20 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>230</y>
+     <y>190</y>
      <width>71</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>登入</string>
+    <string>登录</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="ckb_remember">
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>230</y>
+     <y>200</y>
      <width>80</width>
      <height>19</height>
     </rect>

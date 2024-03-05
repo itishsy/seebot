@@ -84,9 +84,14 @@ class Ui_frm_flow_config(object):
         self.btn_save = QPushButton(frm_flow_config)
         self.btn_save.setObjectName(u"btn_save")
         self.btn_save.setGeometry(QRect(700, 800, 75, 31))
-        self.btn_debug = QPushButton(frm_flow_config)
-        self.btn_debug.setObjectName(u"btn_debug")
-        self.btn_debug.setGeometry(QRect(90, 800, 75, 31))
+        self.btn_sync = QPushButton(frm_flow_config)
+        self.btn_sync.setObjectName(u"btn_sync")
+        self.btn_sync.setGeometry(QRect(590, 800, 101, 31))
+        font1 = QFont()
+        font1.setItalic(False)
+        font1.setUnderline(True)
+        self.btn_sync.setFont(font1)
+        self.btn_sync.setAutoFillBackground(False)
         self.gbx_action = QGroupBox(frm_flow_config)
         self.gbx_action.setObjectName(u"gbx_action")
         self.gbx_action.setGeometry(QRect(10, 70, 311, 711))
@@ -141,7 +146,7 @@ class Ui_frm_flow_config(object):
     # setupUi
 
     def retranslateUi(self, frm_flow_config):
-        frm_flow_config.setWindowTitle(QCoreApplication.translate("frm_flow_config", u"seebot \u6d41\u7a0b\u914d\u7f6e", None))
+        frm_flow_config.setWindowTitle(QCoreApplication.translate("frm_flow_config", u"seebot-ide", None))
         ___qtablewidgetitem = self.tbl_steps.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("frm_flow_config", u"\u6b65\u9aa4\u540d\u79f0", None));
         ___qtablewidgetitem1 = self.tbl_steps.horizontalHeaderItem(1)
@@ -156,7 +161,7 @@ class Ui_frm_flow_config(object):
         self.tab_flow.setTabText(self.tab_flow.indexOf(self.tab_flow_vars), QCoreApplication.translate("frm_flow_config", u"\u6d41\u7a0b\u53d8\u91cf", None))
         self.btn_run.setText(QCoreApplication.translate("frm_flow_config", u"\u8fd0\u884c", None))
         self.btn_save.setText(QCoreApplication.translate("frm_flow_config", u"\u4fdd\u5b58", None))
-        self.btn_debug.setText(QCoreApplication.translate("frm_flow_config", u"\u8c03\u8bd5", None))
+        self.btn_sync.setText(QCoreApplication.translate("frm_flow_config", u"\u540c\u6b65\u5230\u670d\u52a1\u5668", None))
         self.gbx_action.setTitle(QCoreApplication.translate("frm_flow_config", u"\u64cd\u4f5c\u6307\u4ee4", None))
         self.groupBox.setTitle("")
         self.lab_app.setText(QCoreApplication.translate("frm_flow_config", u"\u5e94\u7528\uff1a", None))

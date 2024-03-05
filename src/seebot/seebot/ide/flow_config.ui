@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>seebot 流程配置</string>
+   <string>seebot-ide</string>
   </property>
   <widget class="QTabWidget" name="tab_flow">
    <property name="geometry">
@@ -168,17 +168,26 @@
     <string>保存</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_debug">
+  <widget class="QPushButton" name="btn_sync">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>590</x>
      <y>800</y>
-     <width>75</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <italic>false</italic>
+     <underline>true</underline>
+    </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>调试</string>
+    <string>同步到服务器</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="gbx_action">
