@@ -18,7 +18,9 @@ class IndexWin(QMainWindow, Ui_frm_index):
     def show(self) -> None:
         super(IndexWin, self).show()
         self.service = Services()
-        res = self.service.find_setting('remember_me').split('`')
+        res = self.service.find_setting('remember_me')
+        if len(res) != 0:
+            res = res.split('`')
         if len(res) == 3:
             self.ckb_remember.setChecked(True)
             self.cmb_server.setCurrentText(res[0])

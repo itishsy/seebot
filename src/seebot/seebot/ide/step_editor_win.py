@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QFormLayout, QComboBox, QCheckBox, QLineEdit
+from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QFormLayout, QComboBox, QCheckBox, QLineEdit, QMessageBox
 from PySide6.QtCore import Qt, QObject
 from PySide6.QtGui import QBrush, QColor
 
 from seebot.ide.step_editor import Ui_frm_step_edit
 import json
+import copy
 
 
 class StepEditorWin(QMainWindow, Ui_frm_step_edit):
@@ -16,7 +17,7 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         self.target_cond_data = {}
         self.action_fields = []
         self.action_cond_data = {}
-        self.changed_nothing = True
+        self.changed_fields = []
         self.btn_save.clicked.connect(self.on_save_click)
         self.btn_run.clicked.connect(self.on_run_click)
 
@@ -26,7 +27,8 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             self.setWindowTitle('编辑步骤 【' + self.action_name + '】')
         else:
             self.setWindowTitle('新增步骤 【' + self.action_name + '】')
-        self.ori_step = self.step
+        self.ori_step = copy.deepcopy(self.step)
+        self.other_steps = self.fetch_all_other_step()
         self.load_step_data()
         self.fetch_cond_data()
         self.load_dynamic_data('target')
@@ -46,21 +48,16 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                         fid.setChecked(True if self.step[key] == 1 else False)
                 elif isinstance(fid, QComboBox):
                     fid.currentTextChanged.connect(self.editing_finished)
+                    current_text = self.step[key]
+                    if key in ['skipTo', 'failedSkipTo']:
+                        for step_name in self.other_steps:
+                            fid.addItem(step_name, step_name)
                     if self.step[key] is not None:
-                        fid.setCurrentText(str(self.step[key]))
+                        fid.setCurrentText(str(current_text))
                 else:
                     fid.editingFinished.connect(self.editing_finished)
                     if self.step[key] is not None:
                         fid.setText(str(self.step[key]))
-
-
-        # self.fid_stepName.setText(self.step['stepName'])
-        # if self.step['status'] != 1:
-        #     self.fid_status.setChecked(True)
-        #
-        #
-        # self.fid_stepName.editingFinished.connect(self.editing_finished)
-        # self.fid_status.editingFinished.connect(self.editing_finished)
 
     def load_dynamic_data(self, region):
         args_vos = self.step[region + "ArgsVOS"]
@@ -104,6 +101,16 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
         for item in self.step["actionArgsVOS"]:
             if item['cond'] != '':
                 self.action_cond_data = json.loads(item['cond'])
+
+    def fetch_all_other_step(self):
+        steps = []
+        tbl_steps = self.base.tb if hasattr(self.base, 'tb') else self.base
+        row_count = tbl_steps.rowCount()
+        for i in range(row_count):
+            name = tbl_steps.item(i, 0).text()
+            if name != self.step['stepName']:
+                steps.append(name)
+        return steps
 
     def on_dynamic_combo_change(self, arg1):
         sender = self.sender()
@@ -214,9 +221,9 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
             args[field_key] = new_val
             self.step[args_key] = json.dumps(args, ensure_ascii=False)
 
-            if self.changed_nothing:
-                ori_args = json.loads(self.ori_step[args_key])
-                self.changed_nothing = ori_args[field_key] == new_val
+            ori_args = json.loads(self.ori_step[args_key])
+            if ori_args[field_key] != new_val:
+                self.changed_fields.append(sender.objectName())
 
             for item in self.step[vos_name]:
                 if item['fieldKey'] == field_key:
@@ -224,13 +231,26 @@ class StepEditorWin(QMainWindow, Ui_frm_step_edit):
                     break
         else:
             self.step[fid_name] = new_val
-            if self.changed_nothing:
-                self.changed_nothing = self.ori_step[fid_name] == new_val
+            if self.ori_step[fid_name] != new_val:
+                self.changed_fields.append(fid_name)
 
     def on_save_click(self):
-        if self.changed_nothing:
+        if len(self.changed_fields) == 0:
             self.close()
             return
+
+        if self.step['stepName'] in self.other_steps:
+            QMessageBox.information(self, "结果", '步骤名称不能重复')
+            return
+
+        int_fields = ['timeout', 'waitBefore', 'waitAfter', 'failedRetry']
+        intersection = [x for x in self.changed_fields if x in int_fields]
+        if len(intersection) > 0:
+            for fid in intersection:
+                val = getattr(self, 'fid_' + fid).text()
+                if not val.isdigit():
+                    QMessageBox.information(self, "结果", '请填写数字。'+fid)
+                    return
 
         if hasattr(self, 'step_item'):
             self.step_item.setText(self.step['stepName'])

@@ -145,7 +145,7 @@
         <x>30</x>
         <y>20</y>
         <width>391</width>
-        <height>152</height>
+        <height>158</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
@@ -163,19 +163,18 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="fid_skipTo">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="placeholderText">
-          <string>不跳轉</string>
-         </property>
+        <widget class="QComboBox" name="fid_skipTo">
+         <item>
+          <property name="text">
+           <string/>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="Label_2">
          <property name="text">
-          <string>超时时间</string>
+          <string>超时时间(s)</string>
          </property>
         </widget>
        </item>
@@ -203,7 +202,7 @@
        <item row="3" column="0">
         <widget class="QLabel" name="Label_4">
          <property name="text">
-          <string>执行前等待</string>
+          <string>执行前等待(s)</string>
          </property>
         </widget>
        </item>
@@ -217,7 +216,7 @@
        <item row="4" column="0">
         <widget class="QLabel" name="Label_5">
          <property name="text">
-          <string>执行后等待</string>
+          <string>执行后等待(s)</string>
          </property>
         </widget>
        </item>
@@ -290,12 +289,18 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="fid_failedSkipTo"/>
+        <widget class="QComboBox" name="fid_failedSkipTo">
+         <item>
+          <property name="text">
+           <string/>
+          </property>
+         </item>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="Label_8">
          <property name="text">
-          <string>失败重试次数</string>
+          <string>失败重试次数(s)</string>
          </property>
         </widget>
        </item>
@@ -354,7 +359,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>301</width>
+      <width>361</width>
       <height>21</height>
      </rect>
     </property>
@@ -365,7 +370,7 @@
    <widget class="QCheckBox" name="fid_status">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>400</x>
       <y>10</y>
       <width>61</width>
       <height>19</height>

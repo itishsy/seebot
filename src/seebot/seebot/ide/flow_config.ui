@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>870</width>
-    <height>840</height>
+    <width>1140</width>
+    <height>845</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -104,7 +104,7 @@
    </widget>
    <widget class="QWidget" name="tab_flow_vars">
     <attribute name="title">
-     <string>流程变量</string>
+     <string>启动参数</string>
     </attribute>
     <widget class="QTableWidget" name="tbl_args">
      <property name="geometry">
@@ -158,9 +158,9 @@
   <widget class="QPushButton" name="btn_save">
    <property name="geometry">
     <rect>
-     <x>700</x>
+     <x>1054</x>
      <y>800</y>
-     <width>75</width>
+     <width>71</width>
      <height>31</height>
     </rect>
    </property>
@@ -171,9 +171,9 @@
   <widget class="QPushButton" name="btn_sync">
    <property name="geometry">
     <rect>
-     <x>590</x>
+     <x>930</x>
      <y>800</y>
-     <width>101</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -238,7 +238,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>851</width>
+     <width>1121</width>
      <height>51</height>
     </rect>
    </property>
@@ -263,7 +263,7 @@
      <rect>
       <x>50</x>
       <y>10</y>
-      <width>181</width>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -281,7 +281,7 @@
    <widget class="QLabel" name="lab_flow">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>320</x>
       <y>20</y>
       <width>53</width>
       <height>15</height>
@@ -294,9 +294,9 @@
    <widget class="QComboBox" name="cmb_flow">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>360</x>
       <y>10</y>
-      <width>191</width>
+      <width>251</width>
       <height>31</height>
      </rect>
     </property>
@@ -317,22 +317,22 @@
    <widget class="QLabel" name="lab_account">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>650</x>
       <y>20</y>
       <width>53</width>
       <height>15</height>
      </rect>
     </property>
     <property name="text">
-     <string>参数：</string>
+     <string>账户：</string>
     </property>
    </widget>
    <widget class="QComboBox" name="cmb_task">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>690</x>
       <y>10</y>
-      <width>281</width>
+      <width>311</width>
       <height>31</height>
      </rect>
     </property>
@@ -350,19 +350,133 @@
      </property>
     </item>
    </widget>
+   <widget class="QPushButton" name="btn_reload">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>10</y>
+      <width>75</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>刷新</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QPushButton" name="btn_reload">
+  <widget class="QPushButton" name="btn_suspend">
    <property name="geometry">
     <rect>
-     <x>780</x>
+     <x>90</x>
      <y>800</y>
-     <width>75</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>刷新</string>
+    <string>暂停</string>
    </property>
+  </widget>
+  <widget class="QPushButton" name="btn_continue">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>800</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>继续</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_back">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>800</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>上一步</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_next">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>800</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>下一步</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_stop">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>800</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>停止</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="gbx_vars">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>70</y>
+     <width>271</width>
+     <height>381</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>运行时变量</string>
+   </property>
+   <widget class="QTableView" name="tbl_vars">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>251</width>
+      <height>351</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="gbx_logs">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>460</y>
+     <width>271</width>
+     <height>321</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>执行日志</string>
+   </property>
+   <widget class="QListWidget" name="lis_logs">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>251</width>
+      <height>291</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

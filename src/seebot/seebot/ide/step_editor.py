@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'step_editor.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.6.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_frm_step_edit(object):
             frm_step_edit.setObjectName(u"frm_step_edit")
         frm_step_edit.setWindowModality(Qt.ApplicationModal)
         frm_step_edit.resize(482, 545)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(frm_step_edit.sizePolicy().hasHeightForWidth())
@@ -69,21 +69,23 @@ class Ui_frm_step_edit(object):
         self.groupBox = QGroupBox(self.tab_trans)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setGeometry(QRect(10, 10, 461, 181))
+        self.groupBox.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(30, 20, 411, 152))
+        self.formLayoutWidget.setGeometry(QRect(30, 20, 391, 158))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setLabelAlignment(Qt.AlignCenter)
+        self.formLayout.setLabelAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.formLayout.setFormAlignment(Qt.AlignHCenter|Qt.AlignTop)
         self.formLayout.setContentsMargins(0, 0, 0, 0)
         self.Label = QLabel(self.formLayoutWidget)
         self.Label.setObjectName(u"Label")
 
         self.formLayout.setWidget(0, QFormLayout.LabelRole, self.Label)
 
-        self.fid_skipTo = QLineEdit(self.formLayoutWidget)
+        self.fid_skipTo = QComboBox(self.formLayoutWidget)
+        self.fid_skipTo.addItem("")
         self.fid_skipTo.setObjectName(u"fid_skipTo")
-        self.fid_skipTo.setEnabled(True)
 
         self.formLayout.setWidget(0, QFormLayout.FieldRole, self.fid_skipTo)
 
@@ -132,7 +134,7 @@ class Ui_frm_step_edit(object):
         self.groupBox_2.setGeometry(QRect(10, 200, 461, 161))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(30, 20, 411, 121))
+        self.formLayoutWidget_2.setGeometry(QRect(30, 20, 391, 121))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setHorizontalSpacing(6)
@@ -156,6 +158,7 @@ class Ui_frm_step_edit(object):
         self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.Label_7)
 
         self.fid_failedSkipTo = QComboBox(self.formLayoutWidget_2)
+        self.fid_failedSkipTo.addItem("")
         self.fid_failedSkipTo.setObjectName(u"fid_failedSkipTo")
 
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.fid_failedSkipTo)
@@ -182,10 +185,10 @@ class Ui_frm_step_edit(object):
         self.groupBox_3.setGeometry(QRect(10, 10, 461, 41))
         self.fid_stepName = QLineEdit(self.groupBox_3)
         self.fid_stepName.setObjectName(u"fid_stepName")
-        self.fid_stepName.setGeometry(QRect(10, 10, 301, 21))
+        self.fid_stepName.setGeometry(QRect(10, 10, 361, 21))
         self.fid_status = QCheckBox(self.groupBox_3)
         self.fid_status.setObjectName(u"fid_status")
-        self.fid_status.setGeometry(QRect(390, 10, 61, 19))
+        self.fid_status.setGeometry(QRect(400, 10, 61, 19))
         font = QFont()
         font.setPointSize(10)
         self.fid_status.setFont(font)
@@ -205,14 +208,15 @@ class Ui_frm_step_edit(object):
         self.tab_step.setTabText(self.tab_step.indexOf(self.tab_target), QCoreApplication.translate("frm_step_edit", u"\u64cd\u4f5c\u5bf9\u8c61", None))
         self.groupBox.setTitle(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u53c2\u6570", None))
         self.Label.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u6210\u529f\u8df3\u8f6c", None))
-        self.fid_skipTo.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u8df3\u8f49", None))
-        self.Label_2.setText(QCoreApplication.translate("frm_step_edit", u"\u8d85\u65f6\u65f6\u95f4", None))
+        self.fid_skipTo.setItemText(0, "")
+
+        self.Label_2.setText(QCoreApplication.translate("frm_step_edit", u"\u8d85\u65f6\u65f6\u95f4(s)", None))
         self.fid_timeout.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"10\u79d2", None))
         self.Label_3.setText(QCoreApplication.translate("frm_step_edit", u"\u8df3\u8fc7\u6b64\u6b65\u9aa4\u6761\u4ef6", None))
         self.fid_skipCondition.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u65e0", None))
-        self.Label_4.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u524d\u7b49\u5f85", None))
+        self.Label_4.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u524d\u7b49\u5f85(s)", None))
         self.fid_waitBefore.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u7b49\u5f85", None))
-        self.Label_5.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u540e\u7b49\u5f85", None))
+        self.Label_5.setText(QCoreApplication.translate("frm_step_edit", u"\u6267\u884c\u540e\u7b49\u5f85(s)", None))
         self.fid_waitAfter.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u7b49\u5f85", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("frm_step_edit", u"\u5f02\u5e38\u5904\u7406", None))
         self.Label_6.setText(QCoreApplication.translate("frm_step_edit", u"\u51fa\u73b0\u5f02\u5e38\u65f6", None))
@@ -221,7 +225,9 @@ class Ui_frm_step_edit(object):
         self.fid_failedStrategy.setItemText(2, QCoreApplication.translate("frm_step_edit", u"\u8df3\u8f6c", None))
 
         self.Label_7.setText(QCoreApplication.translate("frm_step_edit", u"\u5f02\u5e38\u8df3\u8f6c\u81f3", None))
-        self.Label_8.setText(QCoreApplication.translate("frm_step_edit", u"\u5931\u8d25\u91cd\u8bd5\u6b21\u6570", None))
+        self.fid_failedSkipTo.setItemText(0, "")
+
+        self.Label_8.setText(QCoreApplication.translate("frm_step_edit", u"\u5931\u8d25\u91cd\u8bd5\u6b21\u6570(s)", None))
         self.fid_failedRetry.setPlaceholderText(QCoreApplication.translate("frm_step_edit", u"\u4e0d\u91cd\u8bd5", None))
         self.tab_step.setTabText(self.tab_step.indexOf(self.tab_trans), QCoreApplication.translate("frm_step_edit", u"\u6d41\u8f6c\u63a7\u5236", None))
         self.btn_run.setText(QCoreApplication.translate("frm_step_edit", u"\u8fd0\u884c\u6b64\u6b65\u9aa4", None))

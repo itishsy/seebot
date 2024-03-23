@@ -6,6 +6,8 @@ from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMo
 from seebot.ide.flow_config import Ui_frm_flow_config
 import seebot.ide.flow_running_win as running
 import seebot.ide.step_editor_win as editor
+import json
+import os
 
 
 class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
@@ -15,6 +17,10 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.app_code = None
         self.flow_code = None
         self.task_code = None
+        self.app_data = None
+        self.flow_data = None
+        self.task_data = None
+        self.task_Args_data = None
         # self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint)
         screen_height = QGuiApplication.screenAt(QCursor().pos()).geometry().height()
         if self.size().height() > screen_height:
@@ -31,7 +37,7 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
     def show(self) -> None:
         super(FlowConfigWin, self).show()
         self.setWindowTitle('seebot-ide 连接到 ' + self.service.server)
-        self.btn_sync.hide()
+        # self.btn_sync.hide()
         self.load_action_tree()
         self.load_app_data()
         self.btn_save.clicked.connect(self.on_save_click)
@@ -61,16 +67,21 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.cmb_app.addItem("==请选择==")
         self.cmb_flow.clear()
         self.cmb_flow.addItem("==请选择==")
+        self.app_data = apps
         for item in apps:
             self.cmb_app.addItem(item['appName'], item['appCode'])
-        res = self.service.find_setting('remember_app').split('`')
+        res = self.service.find_setting('remember_app')
+        if len(res) != 0:
+            res = res.split('`')
         if len(res) == 3:
             self.cmb_app.setCurrentText(res[0])
             self.on_app_change()
             self.cmb_flow.setCurrentText(res[1])
-            self.app_code = self.cmb_flow.currentData()
             self.cmb_task.setCurrentText(res[2])
+            self.app_code = self.cmb_app.currentData()
+            self.flow_code = self.cmb_flow.currentData()
             self.task_code = self.cmb_task.currentData()
+
         self.cmb_app.currentTextChanged.connect(self.on_app_change)
 
     def on_app_change(self):
@@ -81,11 +92,13 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.cmb_task.addItem("==请选择==")
         if self.app_code is not None:
             data = self.service.find_flow(self.app_code)
+            self.flow_data = data["data"]
             for item in data["data"]:
                 self.cmb_flow.addItem(item['flowName'], item['flowCode'])
             self.cmb_flow.currentIndexChanged.connect(self.on_flow_change)
 
             data = self.service.find_task(self.app_code)
+            self.task_data = data["data"]
             for item in data["data"]:
                 if item['companyName'] is not None and item['accountNumber'] is not None:
                     text = item['companyName']+'('+item['accountNumber']+')'
@@ -141,15 +154,18 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.tbl_steps.customContextMenuRequested.connect(self.show_context_menu)
         if local:
-            self.btn_sync.show()
+            self.btn_sync.setText("当前流程未同步")
+            self.btn_sync.setStyleSheet("color:" + QColor(255, 0, 0).name())
         else:
-            self.btn_sync.hide()
+            self.btn_sync.setText("流程已同步")
+            self.btn_sync.setStyleSheet("color:" + QColor(244, 204, 204).name())
 
     def load_task_data(self):
         setattr(self.tbl_steps, 'changed', False)
         self.tbl_args.setRowCount(0)
         if self.task_code is not None:
             data = self.service.find_task_args(self.app_code, self.task_code)
+            self.task_Args_data = data["data"]
             for item in data["data"]:
                 self.append_args_row(item['formName'], item['argsKey'], item['argsValue'])
 
@@ -245,12 +261,54 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
             self.load_step_data()
 
     def on_run_click(self):
-        self.win = running.FlowRunningWin()
-        screen = QApplication.primaryScreen().geometry()
-        x = screen.width() - self.win.frameGeometry().width()
-        y = screen.height() - self.win.frameGeometry().height()
-        self.win.move(x, 0)
-        self.win.show()
+        #self.win = running.FlowRunningWin()
+        #screen = QApplication.primaryScreen().geometry()
+        #x = screen.width() - self.win.frameGeometry().width()
+        #y = screen.height() - self.win.frameGeometry().height()
+        #self.win.move(x, 0)
+        #self.win.show()
+        self.current_app = None
+        self.current_flow = None
+        self.current_task = None
+        for item in self.app_data:
+            if item['appCode'] == self.app_code:
+                self.current_app = item
+                continue
+        for item in self.flow_data:
+            if item['flowCode'] == self.flow_code:
+                self.current_flow = item
+                continue
+        for item in self.task_data:
+            if item['taskCode'] == self.task_code:
+                self.current_task = item
+                continue
+        self.app_args = json.loads(self.current_app['appArgs'])
+
+        flow_args = {"appCode": self.app_code,
+                    "flowCode": self.flow_code,
+                    "flowName": self.current_flow['flowName'],
+                    "declareSystem": self.current_flow['declareSystem'],
+                    "addrName": self.app_args['addrName'],
+                    "addrId": self.app_args['addrId'],
+                    "businessType": self.app_args['businessType'],
+                    "taskCode": self.task_code,
+                    "taskStatus": self.current_task['status'],
+                    "clientId": self.current_task['clientId'],
+                    "machineCode": self.current_task['machineCode']
+                    }
+        chrome_args = {
+            "driverPath": os.path.abspath(".") + "\\robot\\chrome\\driver\\chromedriver.exe".replace('\r', '\\r'),
+            "pluginPath": os.path.abspath(".") + "\\robot\\chrome\\plugin\\chrome".replace('\r', '\\r'),
+            "sourcePath": os.path.abspath(".") + "\\robot\\chrome\\source\\chrome.exe".replace('\r', '\\r')
+        }
+        for item in self.task_Args_data:
+            flow_args.update({item['argsKey']: item['argsValue']})
+
+        res = self.service.debug_flow_step(self.flow_code, flow_args, chrome_args)
+        if res['code'] == 200:
+            QMessageBox.information(self, "结果", '启动成功')
+        else:
+            QMessageBox.information(self, "失败", res['message'])
 
     def on_sync_click(self):
         res = self.service.sync_flow_steps(self.flow_code)

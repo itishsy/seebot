@@ -90,6 +90,11 @@
    </item>
    <item>
     <property name="text">
+     <string>http://127.0.0.1:9090</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
      <string>http://192.168.0.99:9999</string>
     </property>
    </item>
