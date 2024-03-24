@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QFormLayout, QComboBox, QCheckBox, QLineEdit, QMessageBox
-from PySide6.QtCore import Qt, QObject
+from PySide6.QtCore import Qt, QObject, QRect
 from PySide6.QtGui import QBrush, QColor
 
 from seebot.ide.editor import Ui_frm_step_edit
@@ -34,9 +34,24 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
 
         size1 = len(self.step["targetArgsVOS"])
         size2 = len(self.step["actionArgsVOS"])
+        print(self.grb_action.geometry())
+        print(self.fol_action.geometry())
         if size1 < 6 and size2 > 6:
-            self.grb_target.setFixedHeight(self.grb_target.height() - 30)
-            self.grb_action.setFixedHeight(self.grb_action.height() + 30)
+            offsize = 70
+            # self.fol_target.setVerticalSpacing(size1)
+            self.grb_target.setFixedHeight(self.grb_target.height() - offsize)
+            # self.fol_action.setVerticalSpacing(size2)
+            self.grb_action.setGeometry(self.grb_action.geometry().x(), self.grb_action.geometry().y() - offsize,
+                                        self.grb_action.geometry().width(), self.grb_action.geometry().height() + 80)
+            # self.grb_action.setFixedHeight(self.grb_action.height() + 30)
+            rect = QRect()
+            rect.adjust(self.fol_action.geometry().x(), self.fol_action.geometry().y(),
+                                        self.fol_action.geometry().width(), self.fol_action.geometry().height() + 80)
+            # self.fol_action.setVerticalSpacing(size2)
+            self.fol_action.setGeometry(rect)
+            # self.fol_action.setSizeConstraint()
+            print(self.grb_action.geometry())
+            print(self.fol_action.geometry())
 
         self.load_dynamic_data('target')
         self.load_dynamic_data('action')
@@ -176,6 +191,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
     def add_dynamic_field(self, field_key, field_type, field_name):
         label = QLabel(self.tab_target)
         label.setObjectName(u"lab_" + field_key)
+        label.setMinimumWidth(100)
         label.setText(field_name)
         if field_type == 'singleDropList':
             field = QComboBox(self.tab_target)

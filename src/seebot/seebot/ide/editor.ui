@@ -92,14 +92,18 @@
         <height>141</height>
        </rect>
       </property>
-      <layout class="QFormLayout" name="fol_target"/>
+      <layout class="QFormLayout" name="fol_target">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       </property>
+      </layout>
      </widget>
     </widget>
     <widget class="QGroupBox" name="grb_action">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>190</y>
+       <y>180</y>
        <width>381</width>
        <height>181</height>
       </rect>
@@ -116,7 +120,17 @@
         <height>151</height>
        </rect>
       </property>
-      <layout class="QFormLayout" name="fol_action"/>
+      <layout class="QFormLayout" name="fol_action">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::ExpandingFieldsGrow</enum>
+       </property>
+       <property name="horizontalSpacing">
+        <number>8</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>8</number>
+       </property>
+      </layout>
      </widget>
     </widget>
    </widget>
