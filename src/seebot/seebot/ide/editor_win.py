@@ -192,6 +192,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         label = QLabel(self.tab_target)
         label.setObjectName(u"lab_" + field_key)
         label.setMinimumWidth(100)
+        # label.setMinimumSize(100, 50)
         label.setText(field_name)
         if field_type == 'singleDropList':
             field = QComboBox(self.tab_target)
