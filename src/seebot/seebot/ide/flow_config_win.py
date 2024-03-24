@@ -85,24 +85,24 @@ class FlowConfigWin(QMainWindow, Ui_frm_flow_config):
         self.cmb_app.currentTextChanged.connect(self.on_app_change)
 
     def on_app_change(self):
-        self.app_code = self.cmb_app.currentData()
+        app_code = self.cmb_app.currentData()['appCode']
         self.cmb_flow.clear()
         self.cmb_flow.addItem("==请选择==")
         self.cmb_task.clear()
         self.cmb_task.addItem("==请选择==")
-        if self.app_code is not None:
-            data = self.service.find_flow(self.app_code)
+        if app_code is not None:
+            data = self.service.find_flow(app_code)
             self.flow_data = data["data"]
             for item in data["data"]:
-                self.cmb_flow.addItem(item['flowName'], item['flowCode'])
+                self.cmb_flow.addItem(item['flowName'], item)
             self.cmb_flow.currentIndexChanged.connect(self.on_flow_change)
 
-            data = self.service.find_task(self.app_code)
+            data = self.service.find_task(app_code)
             self.task_data = data["data"]
             for item in data["data"]:
                 if item['companyName'] is not None and item['accountNumber'] is not None:
                     text = item['companyName']+'('+item['accountNumber']+')'
-                    self.cmb_task.addItem(text, item['taskCode'])
+                    self.cmb_task.addItem(text, item)
             self.cmb_task.currentIndexChanged.connect(self.on_task_change)
 
     def on_flow_change(self):

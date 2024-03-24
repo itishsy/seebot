@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from seebot.ide.open_app import Ui_frm_open
 import seebot.ide.flow_config_win as config
-from seebot.ide.services import Api
+from seebot.ide.service import Api
 
 import seebot.utils.sqlite as db
 
