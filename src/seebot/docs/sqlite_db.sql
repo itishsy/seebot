@@ -1,7 +1,7 @@
 CREATE TABLE `flow` (
   `code` VARCHAR(50) DEFAULT NULL,
   `steps` TEXT DEFAULT NULL,
-  `is_sync` INTEGER DEFAULT NULL,
+  `status` INTEGER DEFAULT NULL,
   `updated` TEXT DEFAULT NULL,
   `synced` TEXT DEFAULT NULL
 );

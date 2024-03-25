@@ -28,7 +28,6 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
         self.apps = None
         self.flow_data = None
         self.task_data = None
-        self.task_Args_data = None
         # self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint)
         screen_height = QGuiApplication.screenAt(QCursor().pos()).geometry().height()
         if self.size().height() > screen_height:
@@ -38,9 +37,9 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.setColumnWidth(0, 320)
         self.tbl_steps.setColumnWidth(1, 100)
         self.tbl_args.setColumnWidth(0, 80)
-        self.tbl_args.setColumnWidth(1, 100)
-        self.tbl_args.setColumnWidth(2, 230)
-        self.btn_sync.setStyleSheet("color:" + QColor(255, 51, 204).name())
+        self.tbl_args.setColumnWidth(0, 100)
+        self.tbl_args.setColumnWidth(1, 230)
+        # self.btn_sync.setStyleSheet("color:" + QColor(255, 51, 204).name())
         # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
 
     def show(self) -> None:
@@ -100,7 +99,6 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
             self.on_app_change()
             self.cmb_flow.setCurrentText(res[1])
             self.cmb_task.setCurrentText(res[2])
-            # self.app_code = self.cmb_app.currentData()['appCode']
             # self.flow_code = self.cmb_flow.currentData()["flowCode"]
             # self.task_code = self.cmb_task.currentData()
         self.cmb_app.currentTextChanged.connect(self.on_app_change)
@@ -131,28 +129,18 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
         flow_code = flow['flowCode']
         cache_flow = self.storage.find_flow(flow_code)
         steps = self.service.find_step(flow_code)
-        if cache_flow is None:
-            self.storage.init_flow(flow_code, steps)
-        else:
-            is_sync = cache_flow['is_sync']
-            updated = cache_flow['updated']
-            if is_sync == 1:
-                self.storage.init_flow(flow_code, steps)
-            else:
-                msg_code = QMessageBox.question(self, "选择流程源", "本地缓存流程未同步到服务器，【是】加载本地，【否】加载服务器", QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No)
-                if msg_code == QMessageBox.StandardButton.No:
-                    print(msg_code)
-                else:
-                    print(msg_code)
-
+        if cache_flow is not None and cache_flow['status'] == 0:
+            msg_code = QMessageBox.question(self, "选择数据源", "本地流程与服务器不一致，【是】加载本地，【否】加载服务器", QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No)
+            if msg_code == QMessageBox.StandardButton.No:
+                self.storage.update_flow_status(flow_code, 2)
         self.load_step_data()
-        # self.service.upset_setting('remember_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
+        self.storage.upset_key_value('session_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
 
     def on_task_change(self):
         self.task_code = self.cmb_task.currentData()
         if self.task_code is not None:
             self.load_task_data()
-            self.service.upset_setting('remember_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
+            self.storage.upset_key_value('session_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
 
     def load_action_tree(self):
         self.actions = self.service.find_action()["data"]
@@ -185,27 +173,36 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
     def load_step_data(self):
         self.tbl_steps.setRowCount(0)
         flow_code = self.cmb_flow.currentData()['flowCode']
-        flow = self.storage.find_flow(flow_code)
-        self.steps = json.loads(flow['steps'])
-        for step in self.steps:
+        cache_flow = self.storage.find_flow(flow_code)
+        if cache_flow is None:
+            steps = json.loads(cache_flow['steps'])
+        else:
+            steps = self.service.find_step(flow_code)
+        for step in steps:
             self.append_row(step)
         self.tbl_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.tbl_steps.customContextMenuRequested.connect(self.show_context_menu)
-        if flow['is_sync'] == 0:
-            self.btn_sync.setText("当前流程未同步")
-            self.btn_sync.setStyleSheet("color:" + QColor(255, 0, 0).name())
+        if cache_flow is not None and cache_flow['status'] == 0:
+            self.btn_sync.show()
+            # self.btn_sync.setStyleSheet("color:" + QColor(255, 0, 0).name())
         else:
-            self.btn_sync.setText("流程已同步")
-            self.btn_sync.setStyleSheet("color:" + QColor(244, 204, 204).name())
+            self.btn_sync.hide()
+            # self.btn_sync.setStyleSheet("color:" + QColor(244, 204, 204).name())
 
     def load_task_data(self):
         setattr(self.tbl_steps, 'changed', False)
         self.tbl_args.setRowCount(0)
-        if self.task_code is not None:
-            data = self.service.find_task_args(self.app_code, self.task_code)
-            self.task_Args_data = data["data"]
+        app_code = self.cmb_app.currentData()['appCode']
+        task_code = self.cmb_task.currentData()['taskCode']
+        if task_code is not None:
+            data = self.service.find_task_args(app_code, task_code)
             for item in data["data"]:
-                self.append_args_row(item['formName'], item['argsKey'], item['argsValue'])
+                rows = self.tbl_args.rowCount()
+                self.tbl_args.insertRow(rows)
+                item_name = QTableWidgetItem(str(item['argsKey']))
+                self.tbl_args.setItem(rows, 0, item_name)
+                item_value = QTableWidgetItem(str(item['argsValue']))
+                self.tbl_args.setItem(rows, 1, item_value)
 
     def show_context_menu(self, pos):
         item = self.tbl_steps.itemAt(pos)
@@ -252,16 +249,6 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.setItem(rows, 1, item_type)
         self.tbl_steps.changed = True
 
-    def append_args_row(self, type, key, value):
-        rows = self.tbl_args.rowCount()
-        self.tbl_args.insertRow(rows)
-        item_type = QTableWidgetItem(str(type))
-        self.tbl_args.setItem(rows, 0, item_type)
-        item_name = QTableWidgetItem(str(key))
-        self.tbl_args.setItem(rows, 1, item_name)
-        item_value = QTableWidgetItem(str(value))
-        self.tbl_args.setItem(rows, 2, item_value)
-
     def on_edit_click(self):
         items = self.tbl_steps.selectedItems()
         if items:
@@ -293,66 +280,58 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
                 data = self.tbl_steps.item(i, 0).data(1)
                 data['number'] = i + 1
                 steps.append(data)
-            print(steps)
-            res = self.service.save_flow_steps(self.flow_code, steps)
-            QMessageBox.information(self, "结果", '保存成功' if res else '保存失败')
+            flow_code = self.cmb_flow.currentData()["flowCode"]
+            self.storage.upset_flow(flow_code, steps)
+            QMessageBox.information(self, "结果", '操作成功')
             self.load_step_data()
 
     def on_run_click(self):
-        #self.win = running.FlowRunningWin()
-        #screen = QApplication.primaryScreen().geometry()
-        #x = screen.width() - self.win.frameGeometry().width()
-        #y = screen.height() - self.win.frameGeometry().height()
-        #self.win.move(x, 0)
-        #self.win.show()
-        self.current_app = None
-        self.current_flow = None
-        self.current_task = None
-        for item in self.apps:
-            if item['appCode'] == self.app_code:
-                self.current_app = item
-                continue
-        for item in self.flow_data:
-            if item['flowCode'] == self.flow_code:
-                self.current_flow = item
-                continue
-        for item in self.task_data:
-            if item['taskCode'] == self.task_code:
-                self.current_task = item
-                continue
-        self.app_args = json.loads(self.current_app['appArgs'])
+        app = self.cmb_app.currentData()
+        flow = self.cmb_flow.currentData()
+        task = self.cmb_task.currentData()
 
-        flow_args = {"appCode": self.app_code,
-                    "flowCode": self.flow_code,
-                    "flowName": self.current_flow['flowName'],
-                    "declareSystem": self.current_flow['declareSystem'],
-                    "addrName": self.app_args['addrName'],
-                    "addrId": self.app_args['addrId'],
-                    "businessType": self.app_args['businessType'],
-                    "taskCode": self.task_code,
-                    "taskStatus": self.current_task['status'],
-                    "clientId": self.current_task['clientId'],
-                    "machineCode": self.current_task['machineCode']
+        app_args = json.loads(app['appArgs'])
+
+        flow_args = {"appCode": app['appCode'],
+                    "flowCode": flow['flowCode'],
+                    "flowName": flow['flowName'],
+                    "declareSystem": flow['declareSystem'],
+                    "addrName": app_args['addrName'],
+                    "addrId": app_args['addrId'],
+                    "businessType": app_args['businessType'],
+                    "taskCode": task["taskCode"],
+                    "taskStatus": task['status'],
+                    "clientId": task['clientId'],
+                    "machineCode": task['machineCode']
                     }
         chrome_args = {
             "driverPath": os.path.abspath(".") + "\\robot\\chrome\\driver\\chromedriver.exe".replace('\r', '\\r'),
             "pluginPath": os.path.abspath(".") + "\\robot\\chrome\\plugin\\chrome".replace('\r', '\\r'),
             "sourcePath": os.path.abspath(".") + "\\robot\\chrome\\source\\chrome.exe".replace('\r', '\\r')
         }
-        for item in self.task_Args_data:
-            flow_args.update({item['argsKey']: item['argsValue']})
+        args_count = self.tbl_args.rowCount()
+        for i in range(args_count):
+            flow_args.update({self.tbl_args.item(i, 0).text(): self.tbl_args.item(i, 1).text()})
 
-        res = self.service.debug_flow_step(self.flow_code, flow_args, chrome_args)
+        flow_steps = []
+        step_count = self.tbl_steps.rowCount()
+        for i in range(step_count):
+            flow_steps.append(self.tbl_steps.item(i, 0).data(1))
+
+        res = self.service.debug_flow_step(flow_steps, flow_args, chrome_args)
         if res['code'] == 200:
             QMessageBox.information(self, "结果", '启动成功')
         else:
             QMessageBox.information(self, "失败", res['message'])
 
     def on_sync_click(self):
-        res = self.service.sync_flow_steps(self.flow_code)
-        if res:
-            self.load_step_data()
-        QMessageBox.information(self, "结果", '同步成功' if res else '同步失败')
+        msg_code = QMessageBox.question(self, "同步确认框", "同步将覆盖服务器流程，是否继续",
+                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if msg_code == QMessageBox.StandardButton.Yes:
+            res = self.service.sync_flow_steps(self.flow_code)
+            if res:
+                self.load_step_data()
+            QMessageBox.information(self, "结果", '同步成功' if res else '同步失败')
 
 
 class TableRowDrag(QTableWidget):

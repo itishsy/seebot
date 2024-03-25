@@ -28,7 +28,7 @@ class Storage:
         self.__execute(sql_c, {'key': key, 'value': val})
 
     def find_flow(self, flow_code):
-        sql_r = "SELECT steps,updated,is_sync,synced FROM flow where code=:code"
+        sql_r = "SELECT steps,updated,status,synced FROM flow where status in(0,1) and code=:code"
         res = self.__query(sql_r, {'code': flow_code})
         data = None
         if len(res) > 0:
@@ -37,23 +37,32 @@ class Storage:
 
     def init_flow(self, flow_code, flow_steps):
         sql_d = "delete from flow where code=:code"
-        sql_c = "insert into flow(code, steps, is_sync) values(:code,:steps,1)"
+        sql_c = "insert into flow(code, steps, status) values(:code,:steps,1)"
         self.__execute(sql_d, {'code': flow_code})
         steps = json.dumps(flow_steps, ensure_ascii=False)
         self.__execute(sql_c, {'code': flow_code, 'steps': steps})
 
     def upset_flow(self, flow_code, flow_steps):
         sql_d = "delete from flow where code=:code"
-        sql_c = "insert into flow(code, steps, is_sync, updated) values(:code,:steps,:is_sync,:updated)"
+        sql_c = "insert into flow(code, steps, status, updated) values(:code,:steps,:status,:updated)"
         self.__execute(sql_d, {'code': flow_code})
         steps = json.dumps(flow_steps, ensure_ascii=False)
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.__execute(sql_c, {'code': flow_code, 'steps': steps, 'is_sync': 0, 'updated': now})
+        self.__execute(sql_c, {'code': flow_code, 'steps': steps, 'status': 0, 'updated': now})
 
-    def update_flow_sync(self, flow_code):
-        sql_u = "update flow set is_sync = 1, synced= :synced where code = :code"
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.__execute(sql_u, {'synced': now, 'code': flow_code})
+    def update_flow_status(self, flow_code, status):
+        """
+        更新flow状态
+        :param flow_code:
+        :param status: 0 未同步 1 已同步 2 放弃
+        :return:
+        """
+        sql_u = "update flow set status = :status,updated= :updated, synced= :synced where code = :code"
+        updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        synced = ''
+        if status == 1:
+            synced = updated
+        self.__execute(sql_u, {'status': status, 'updated': updated, 'synced': synced, 'code': flow_code})
 
     @staticmethod
     def __query(sql, args=None):

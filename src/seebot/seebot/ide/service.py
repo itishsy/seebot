@@ -109,15 +109,15 @@ class Service:
             return True
         return False
 
-    def debug_flow_step(self, flow_code, flow_args, chrome_args):
+    def debug_flow_step(self, flow_steps, flow_args, chrome_args):
         # data =  db.query("select steps from flow where code = :code", {'code': flow_code})
-        flow_steps = self.find_step(flow_code)[0]
+        # flow_steps = self.find_step(flow_code)[0]
         # flow_steps = json.loads(data[0]['steps'])
-        for step in flow_steps:
-            del step['actionArgsVOS']
-            del step['targetArgsVOS']
+        # for step in flow_steps:
+        #     del step['actionArgsVOS']
+        #     del step['targetArgsVOS']
 
-        req_data = {'executionCode': str(uuid.uuid4()), 'flowSteps': flow_steps, 'debugStepCodes': [], 'flowArgs': flow_args,'chromeArgs':chrome_args}
+        req_data = {'executionCode': str(uuid.uuid4()), 'flowSteps': flow_steps, 'debugStepCodes': [], 'flowArgs': flow_args, 'chromeArgs':chrome_args}
 
         url = "http://127.0.0.1:9090/api/robot/debug/debugFlowStep"
         res = httpUtil.post(url=url, param=req_data, headers={"Authorization": self.token})
