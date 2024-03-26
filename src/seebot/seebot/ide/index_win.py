@@ -28,6 +28,7 @@ class IndexWin(QMainWindow, Ui_frm_flow_config):
         #     self.setFixedSize(self.size().width(), screen_height - 60)
         # else:
         #     self.setFixedSize(self.size())
+        self.tbl_steps.horizontalHeader().setVisible(False)
         self.tbl_steps.setColumnWidth(0, 320)
         self.tbl_steps.setColumnWidth(1, 100)
         self.tbl_args.setColumnWidth(0, 80)
