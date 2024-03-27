@@ -24,7 +24,7 @@ class Ui_frm_flow_config(object):
     def setupUi(self, frm_flow_config):
         if not frm_flow_config.objectName():
             frm_flow_config.setObjectName(u"frm_flow_config")
-        frm_flow_config.resize(1066, 696)
+        frm_flow_config.resize(1488, 696)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -157,6 +157,12 @@ class Ui_frm_flow_config(object):
         self.btn_run = QPushButton(self.groupBox_3)
         self.btn_run.setObjectName(u"btn_run")
         self.btn_run.setGeometry(QRect(610, 10, 81, 31))
+        self.trw_steps = QTreeWidget(frm_flow_config)
+        __qtreewidgetitem1 = QTreeWidgetItem()
+        __qtreewidgetitem1.setText(0, u"1");
+        self.trw_steps.setHeaderItem(__qtreewidgetitem1)
+        self.trw_steps.setObjectName(u"trw_steps")
+        self.trw_steps.setGeometry(QRect(1080, 10, 371, 621))
 
         self.retranslateUi(frm_flow_config)
 

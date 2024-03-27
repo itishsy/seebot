@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1066</width>
+    <width>1334</width>
     <height>696</height>
    </rect>
   </property>
@@ -468,6 +468,53 @@
      <string>运行</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QTreeWidget" name="trw_steps">
+   <property name="geometry">
+    <rect>
+     <x>1070</x>
+     <y>10</y>
+     <width>261</width>
+     <height>621</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::VLine</enum>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="dragEnabled">
+    <bool>true</bool>
+   </property>
+   <property name="dragDropMode">
+    <enum>QAbstractItemView::DragOnly</enum>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::ExtendedSelection</enum>
+   </property>
+   <column>
+    <property name="text">
+     <string notr="true">步骤</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>指令</string>
+    </property>
+    <property name="font">
+     <font>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="background">
+     <color>
+      <red>170</red>
+      <green>85</green>
+      <blue>127</blue>
+     </color>
+    </property>
+   </column>
   </widget>
  </widget>
  <resources/>
