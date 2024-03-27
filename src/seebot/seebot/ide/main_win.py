@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QApplication, QWidget, QFrame, QMainWindow,  QTableWidget, QTreeWidget, QTableWidgetItem, QLabel, QTreeWidgetItem, QMessageBox, QMenu)
 from PySide6.QtCore import (Qt, QEvent, QObject, QPoint, QByteArray, QDataStream, QModelIndex,QIODevice, QMimeData)
 from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMouseEvent, QDragEnterEvent, QDragLeaveEvent, \
-    QDrag, QPixmap, QPainter, QPen, QBrush, QColor
+    QDrag, QPixmap, QPainter, QPen, QIcon, QBrush, QColor
 
 from seebot.ide.main import Ui_frm_flow_config
 from seebot.ide.login_win import LoginWin
@@ -177,6 +177,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             if level == 0:
                 top = QTreeWidgetItem()
                 top.setText(0, name)
+                top.setFirstColumnSpanned(True)
                 top.setData(0, Qt.ItemDataRole.UserRole, step)
                 top.setText(1, action_name)
                 group_items.append(top)
@@ -189,7 +190,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         self.trw_steps.addTopLevelItems(group_items)
         self.trw_steps.expandAll()
         self.trw_steps.setDragEnabled(True)
-        self.trw_steps.setStyleSheet(f"QTreeView::item{{height: 28px;}}")
+        self.trw_steps.setStyleSheet(f"QTreeView::item{{height: 25px;}}")
         # self.trw_steps.doubleClicked.connect(self.double_click_event)
         self.trw_steps.mouseDoubleClickEvent = self.double_click_event
         self.trw_steps.setColumnWidth(0, 320)
