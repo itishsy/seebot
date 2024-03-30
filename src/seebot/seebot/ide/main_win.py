@@ -14,6 +14,9 @@ import json
 import os
 
 
+role = Qt.ItemDataRole.UserRole
+
+
 class MainWin(QMainWindow, Ui_frm_flow_config):
     def __init__(self, parent=None):
         self.username = None
@@ -34,6 +37,12 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_args.setColumnWidth(0, 80)
         self.tbl_args.setColumnWidth(0, 100)
         self.tbl_args.setColumnWidth(1, 230)
+
+        self.btn_save.clicked.connect(self.on_save_click)
+        self.btn_run.clicked.connect(self.on_run_click)
+        self.btn_sync.clicked.connect(self.on_sync_click)
+        self.btn_reload.clicked.connect(self.load_step_data)
+        self.trw_steps.viewport().installEventFilter(self)
         # self.btn_sync.setStyleSheet("color:" + QColor(255, 51, 204).name())
         # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
 
@@ -50,25 +59,28 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.win.pre_win = self
             self.win.show()
         else:
-            super(MainWin, self).show()
-            self.setWindowTitle('seebot-ide 连接到 ' + self.service.server)
-            # self.btn_sync.hide()
-            self.load_action_tree()
-            self.load_app_combo()
-            self.btn_save.clicked.connect(self.on_save_click)
-            self.btn_run.clicked.connect(self.on_run_click)
-            self.btn_sync.clicked.connect(self.on_sync_click)
-            self.btn_reload.clicked.connect(self.load_step_data)
-            # self.tbl_steps.setAcceptDrops(True)
-            # self.tbl_steps.doubleClicked.connect(self.on_edit_click)
-            # self.tableDragEvent = TableRowDrag()
-            # self.tableDragEvent.table(self.tbl_steps)
-            # self.tableDragEvent.tree(self.trw_actions)
-            # self.tableDragEvent.service(self.service)
-            # self.tbl_steps.installEventFilter(self.tableDragEvent)
-            # self.tbl_steps.dropEvent = self.tableDragEvent.dropEvent
-            # self.tbl_steps.dragEnterEvent = self.tableDragEvent.dragEnterEvent
-            # setattr(self.tbl_steps, 'changed', False)
+            res = self.service.find_action()
+            if res["code"] == 401:
+                self.win = LoginWin()
+                self.win.pre_win = self
+                self.win.show()
+            else:
+                self.actions = res["data"]
+                super(MainWin, self).show()
+                self.setWindowTitle('seebot-ide 连接到 ' + self.service.server)
+                # self.btn_sync.hide()
+                self.load_action_tree()
+                self.load_app_combo()
+                # self.tbl_steps.setAcceptDrops(True)
+                # self.tbl_steps.doubleClicked.connect(self.on_edit_click)
+                # self.tableDragEvent = TableRowDrag()
+                # self.tableDragEvent.table(self.tbl_steps)
+                # self.tableDragEvent.tree(self.trw_actions)
+                # self.tableDragEvent.service(self.service)
+                # self.tbl_steps.installEventFilter(self.tableDragEvent)
+                # self.tbl_steps.dropEvent = self.tableDragEvent.dropEvent
+                # self.tbl_steps.dragEnterEvent = self.tableDragEvent.dragEnterEvent
+                # setattr(self.tbl_steps, 'changed', False)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if hasattr(self, 'win'):
@@ -135,9 +147,11 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.storage.upset_key_value('session_app', self.cmb_app.currentText() + '`' + self.cmb_flow.currentText() + '`' + self.cmb_task.currentText())
 
     def load_action_tree(self):
-        self.actions = self.service.find_action()["data"]
         self.trw_actions.setColumnWidth(0, 200)
-        self.trw_actions.setHeaderHidden(True)
+        # self.trw_actions.setHeaderHidden(True)
+        self.trw_actions.setDragEnabled(True)
+        self.trw_actions.setAcceptDrops(True)
+        self.trw_actions.setDragDropMode(QTreeWidget.DragDropMode.DragOnly)
         group = []
         for act in self.actions:
             if act['groupName'] not in group:
@@ -151,22 +165,34 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                 if a['groupName'] == group_name:
                     child = QTreeWidgetItem()
                     child.setText(0, str(a['actionName']))
-                    child.setData(0, Qt.ItemDataRole.UserRole, a['actionCode'])
+                    child.setData(0, role, a['actionCode'])
                     child.setToolTip(0, a['comment'])
                     top.addChild(child)
         self.trw_actions.addTopLevelItems(group_items)
         self.trw_actions.expandAll()
-        self.trw_actions.setDragEnabled(True)
-        self.tree_item_drag = TreeItemDrag()
-        self.tree_item_drag.tree(self.trw_actions)
+        # self.trw_actions.setDragEnabled(True)
+        # self.tree_item_drag = TreeItemDrag()
+        # self.tree_item_drag.tree(self.trw_actions)
         # self.startDrag = self.trw_actions.startDrag
-        self.trw_actions.dragLeaveEvent = self.tree_item_drag.dragLeaveEvent
+        # self.trw_actions.dragLeaveEvent = self.tree_item_drag.dragLeaveEvent
+
+    def eventFilter(self, obj, event):
+        if event.type() == event.Type.Drop:
+            print('event.type:' + str(event.type()))
+            item = QTreeWidgetItem(self.trw_steps)
+            item.setText(0, event.mimeData().text())
+            event.accept()
+            return True
+        return super().eventFilter(obj, event)
 
     def load_steps_tree(self, steps):
         self.trw_steps.setColumnCount(2)
-        self.trw_steps.setHeaderHidden(True)
+        # self.trw_steps.setHeaderHidden(True)
+        self.trw_steps.setAcceptDrops(False)
+        # self.trw_steps.setDragEnabled(True)
         self.trw_steps.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
         self.trw_steps.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
+
         group_items = []
         top = QTreeWidgetItem()
         for step in steps:
@@ -178,44 +204,80 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                 top = QTreeWidgetItem()
                 top.setText(0, name)
                 top.setFirstColumnSpanned(True)
-                top.setData(0, Qt.ItemDataRole.UserRole, step)
+                top.setData(0, role, step)
                 top.setText(1, action_name)
                 group_items.append(top)
             else:
                 child = QTreeWidgetItem()
                 child.setText(0, name)
-                child.setData(0, Qt.ItemDataRole.UserRole, step)
+                child.setData(0, role, step)
                 child.setText(1, action_name)
                 top.addChild(child)
         self.trw_steps.addTopLevelItems(group_items)
         self.trw_steps.expandAll()
-        self.trw_steps.setDragEnabled(True)
-        self.trw_steps.setStyleSheet(f"QTreeView::item{{height: 25px;}}")
+        # self.trw_steps.setStyleSheet(f"QTreeView::item{{height: 25px; }}")
         # self.trw_steps.doubleClicked.connect(self.double_click_event)
         self.trw_steps.mouseDoubleClickEvent = self.double_click_event
+        # self.trw_steps.setFrameShape(QFrame.Shape.Box)
+        style = """
+                    QTreeWidget {
+                        color: #333;
+                        border: 1px solid #ccc;
+                        font: 290 10pt "Microsoft YaHei UI";
+                    }
+                    QTreeWidget::item {
+                        height: 30px;
+                    }
+                    QTreeWidget::item:selected {
+                        background-color: #0078d7;
+                        color: white;
+                    }
+                    QTreeWidget::branch: closed:has - children
+                    {
+                        image: url('icon/add.png');
+                    }
+                    QTreeWidget::branch: open:has - children
+                    {
+                        image: url('icon/close.png');
+                    }
+                """
+
+        self.trw_steps.setStyleSheet(style)
         self.trw_steps.setColumnWidth(0, 320)
         self.trw_steps.setColumnWidth(1, 100)
-        self.trw_steps.setFrameShape(QFrame.Shape.Box)
-        # self.trw_steps.setStyleSheet("""
-        #             QTreeWidget {
-        #                 outline: none;
-        #                 border: 1px solid #000;
-        #                 background-color: #fff;
-        #                 font: 14px 'Segoe UI';
-        #             }
-        #             QTreeWidget::item:hover {
-        #                 background-color: #eee;
-        #             }
-        #             QTreeWidget::item:selected {
-        #                 background-color: #ddd;
-        #             }
-        #         """)
 
     def double_click_event(self, event):
         index = self.trw_steps.indexAt(event.pos())
         if index.isValid():
             item = self.trw_steps.itemFromIndex(index)
-            print(item.data(0, Qt.ItemDataRole.UserRole))
+            self.open_editor(item)
+
+    def open_editor(self, item=None):
+        if item is None:
+            pass
+        else:
+            data = item.data(0, role)
+            print(data)
+            self.win = editor.EditorWin()
+            self.win.step = data
+            self.win.base = self
+            self.win.action_name = item.text(1)
+            self.win.step_item = item
+            self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
+            self.win.show()
+
+
+    def fetch_steps(self):
+        steps = []
+        for i in range(self.trw_steps.topLevelItemCount()):
+            top_item = self.trw_steps.topLevelItem(i)
+            print(top_item.text(0))
+            steps.append(top_item.data(0,role))
+            for j in range(top_item.childCount()):
+                child_item = top_item.child(j)
+                steps.append(child_item.data(0,role))
+                print(child_item.text(0))
+        return steps
 
     def load_step_data(self):
         # self.tbl_steps.setRowCount(0)
@@ -227,8 +289,8 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             steps = json.loads(cache_flow['steps'])
         # for step in steps:
         #     self.append_row(step)
-        # self.tbl_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        # self.tbl_steps.customContextMenuRequested.connect(self.show_context_menu)
+        self.trw_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.trw_steps.customContextMenuRequested.connect(self.show_context_menu)
         if cache_flow is not None and cache_flow['status'] == 0:
             self.btn_sync.show()
             # self.btn_sync.setStyleSheet("color:" + QColor(255, 0, 0).name())
@@ -238,7 +300,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         self.load_steps_tree(steps)
 
     def load_task_data(self):
-        setattr(self.tbl_steps, 'changed', False)
+        setattr(self.trw_steps, 'changed', False)
         self.tbl_args.setRowCount(0)
         app_code = self.cmb_app.currentData()['appCode']
         task_code = self.cmb_task.currentData()['taskCode']
@@ -253,11 +315,11 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                 self.tbl_args.setItem(rows, 1, item_value)
 
     def show_context_menu(self, pos):
-        item = self.tbl_steps.itemAt(pos)
-        if item is None or item not in self.tbl_steps.selectedItems():
+        item = self.trw_steps.itemAt(pos)
+        if item is None or item not in self.trw_steps.selectedItems():
             return
 
-        menu = QMenu(self.tbl_steps)
+        menu = QMenu(self.trw_steps)
         edit_action = menu.addAction('编辑')
         menu.addSeparator()
         run_to_action = menu.addAction('运行到此步骤')
@@ -265,7 +327,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         run_from_action = menu.addAction('此步骤开始运行')
         menu.addSeparator()
         delete_action = menu.addAction('删除')
-        action = menu.exec(self.tbl_steps.viewport().mapToGlobal(pos))
+        action = menu.exec(self.trw_steps.viewport().mapToGlobal(pos))
         if action == edit_action:
             self.on_edit_click()
         elif action == run_to_action:
@@ -275,10 +337,10 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         elif action == run_from_action:
             QMessageBox.information(self, "操作", "此步骤开始运行")
         elif action == delete_action:
-            idx = self.tbl_steps.selectedIndexes()
+            idx = self.trw_steps.selectedIndexes()
             row = idx[0].row().real
-            self.tbl_steps.removeRow(row)
-            self.tbl_steps.changed = False
+            self.trw_steps.removeRow(row)
+            self.trw_steps.changed = False
 
     def append_row(self, step):
         if 'stepName' not in step:
@@ -299,15 +361,9 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         self.tbl_steps.changed = True
 
     def on_edit_click(self):
-        items = self.tbl_steps.selectedItems()
+        items = self.trw_steps.selectedItems()
         if items:
-            self.win = editor.EditorWin()
-            self.win.step = items[0].data(Qt.ItemDataRole.UserRole)
-            self.win.base = self.tbl_steps
-            self.win.action_name = items[1].text()
-            self.win.step_item = items[0]
-            self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
-            self.win.show()
+            self.open_editor(items[0])
         else:
             QMessageBox.critical(self, "请选择", "请先选择一行")
 
@@ -326,7 +382,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             steps = []
             row_count = self.tbl_steps.rowCount()
             for i in range(row_count):
-                data = self.tbl_steps.item(i, 0).data(Qt.ItemDataRole.UserRole)
+                data = self.tbl_steps.item(i, 0).data(role)
                 data['number'] = i + 1
                 steps.append(data)
             flow_code = self.cmb_flow.currentData()["flowCode"]
@@ -365,7 +421,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         flow_steps = []
         step_count = self.tbl_steps.rowCount()
         for i in range(step_count):
-            flow_steps.append(self.tbl_steps.item(i, 0).data(Qt.ItemDataRole.UserRole))
+            flow_steps.append(self.tbl_steps.item(i, 0).data(role))
 
         res = self.service.debug_flow_step(flow_steps, flow_args, chrome_args)
         if res['code'] == 200:
@@ -431,8 +487,8 @@ class TableRowDrag(QTableWidget):
             tr_item = self.tr.currentItem()
             if tr_item is not None:
                 print(tr_item.text(0))
-                print(tr_item.data(0, Qt.ItemDataRole.UserRole))
-                self.add_step(tr_item.data(0, Qt.ItemDataRole.UserRole), tr_item.text(0), self.target_row)
+                print(tr_item.data(0, role))
+                self.add_step(tr_item.data(0, role), tr_item.text(0), self.target_row)
 
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         if event.type() == QEvent.Type.ChildAdded:
@@ -521,7 +577,7 @@ class TableRowDrag(QTableWidget):
     def refresh_number(self):
         row_count = self.tb.rowCount()
         for i in range(row_count):
-            data = self.tb.item(i, 0).data(Qt.ItemDataRole.UserRole)
+            data = self.tb.item(i, 0).data(role)
             data['number'] = i + 1
             self.tb.item(i, 0).setData(1, data)
 

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>416</width>
+    <width>421</width>
     <height>497</height>
    </rect>
   </property>
@@ -29,9 +29,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>70</y>
+     <y>50</y>
      <width>401</width>
-     <height>381</height>
+     <height>401</height>
     </rect>
    </property>
    <property name="baseSize">
@@ -52,11 +52,15 @@
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
    </property>
+   <property name="styleSheet">
+    <string notr="true">border-color: rgb(170, 255, 255);
+</string>
+   </property>
    <property name="tabPosition">
     <enum>QTabWidget::North</enum>
    </property>
    <property name="tabShape">
-    <enum>QTabWidget::Triangular</enum>
+    <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
     <number>0</number>
@@ -80,15 +84,18 @@
        <height>171</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="title">
       <string>目标对象</string>
      </property>
      <widget class="QWidget" name="formLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>20</y>
-        <width>361</width>
+        <width>341</width>
         <height>141</height>
        </rect>
       </property>
@@ -105,8 +112,11 @@
        <x>10</x>
        <y>180</y>
        <width>381</width>
-       <height>181</height>
+       <height>191</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="title">
       <string>行为参数</string>
@@ -114,10 +124,10 @@
      <widget class="QWidget" name="formLayoutWidget_4">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>20</y>
-        <width>361</width>
-        <height>151</height>
+        <width>341</width>
+        <height>161</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="fol_action">
@@ -147,6 +157,9 @@
        <height>181</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="title">
       <string>执行参数</string>
      </property>
@@ -156,9 +169,9 @@
      <widget class="QWidget" name="formLayoutWidget">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>20</y>
-        <width>361</width>
+        <width>341</width>
         <height>158</height>
        </rect>
       </property>
@@ -253,15 +266,18 @@
        <height>161</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="title">
       <string>异常处理</string>
      </property>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>20</y>
-        <width>361</width>
+        <width>341</width>
         <height>121</height>
        </rect>
       </property>
@@ -333,14 +349,14 @@
   <widget class="QPushButton" name="btn_run">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>250</x>
      <y>460</y>
-     <width>111</width>
+     <width>71</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>运行此步骤</string>
+    <string>运行步骤</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_save">
@@ -355,32 +371,6 @@
    <property name="text">
     <string>確定</string>
    </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>401</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <widget class="QLineEdit" name="fid_stepName">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>381</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="placeholderText">
-     <string>步骤名称</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QCheckBox" name="fid_status">
    <property name="geometry">
@@ -398,6 +388,22 @@
    </property>
    <property name="text">
     <string>禁用</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="fid_stepName">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>401</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-color: rgb(170, 255, 255);</string>
+   </property>
+   <property name="placeholderText">
+    <string>步骤名称</string>
    </property>
   </widget>
  </widget>

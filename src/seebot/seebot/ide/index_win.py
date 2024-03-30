@@ -5,7 +5,7 @@ from PySide6.QtGui import QGuiApplication, QCursor, QCloseEvent, QDropEvent, QMo
 
 from seebot.ide.index import Ui_frm_flow_config
 from seebot.ide.login_win import LoginWin
-import seebot.ide.editor_win as editor
+import seebot.ide.editor_win2 as editor
 from seebot.ide.storage import Storage
 from seebot.ide.service import Service
 

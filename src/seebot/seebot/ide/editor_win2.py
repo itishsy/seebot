@@ -6,8 +6,6 @@ from seebot.ide.editor import Ui_frm_step_edit
 import json
 import copy
 
-role = Qt.ItemDataRole.UserRole
-
 
 class EditorWin(QMainWindow, Ui_frm_step_edit):
     def __init__(self, parent=None):
@@ -30,7 +28,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         else:
             self.setWindowTitle('新增步骤 【' + self.action_name + '】')
         self.ori_step = copy.deepcopy(self.step)
-        self.other_steps = self.base.fetch_steps()
+        self.other_steps = self.fetch_all_other_step()
         self.load_step_data()
         self.fetch_cond_data()
 
@@ -74,8 +72,8 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
                     fid.currentTextChanged.connect(self.editing_finished)
                     current_text = self.step[key]
                     if key in ['skipTo', 'failedSkipTo']:
-                        for step in self.other_steps:
-                            fid.addItem(step['stepName'], step['stepName'])
+                        for step_name in self.other_steps:
+                            fid.addItem(step_name, step_name)
                     if self.step[key] is not None:
                         fid.setCurrentText(str(current_text))
                 else:
@@ -125,6 +123,16 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         for item in self.step["actionArgsVOS"]:
             if item['cond'] != '':
                 self.action_cond_data = json.loads(item['cond'])
+
+    def fetch_all_other_step(self):
+        steps = []
+        tbl_steps = self.base.tb if hasattr(self.base, 'tb') else self.base
+        row_count = tbl_steps.rowCount()
+        for i in range(row_count):
+            name = tbl_steps.item(i, 0).text()
+            if name != self.step['stepName']:
+                steps.append(name)
+        return steps
 
     def on_dynamic_combo_change(self, arg1):
         sender = self.sender()
@@ -269,11 +277,10 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
                     return
 
         if hasattr(self, 'step_item'):
-            self.step_item.setText(0, self.step['stepName'])
-            self.step_item.setData(0, role, self.step)
+            self.step_item.setText(self.step['stepName'])
+            self.step_item.setData(1, self.step)
             brush = QBrush(QColor(255, 255, 204))
-            self.step_item.setBackground(0, brush)
-            self.step_item.setBackground(1, brush)
+            self.step_item.setBackground(brush)
             self.base.changed = True
             print(self.step)
         else:
