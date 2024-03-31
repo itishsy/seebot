@@ -136,9 +136,6 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
     def load_action_tree(self):
         self.trw_actions.setColumnWidth(0, 200)
         self.trw_actions.setHeaderHidden(True)
-        # self.trw_actions.setDragEnabled(True)
-        # self.trw_actions.setAcceptDrops(True)
-        # self.trw_actions.setDragDropMode(QTreeWidget.DragDropMode.DragOnly)
         group = []
         for act in self.actions:
             if act['groupName'] not in group:
@@ -157,20 +154,6 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                     top.addChild(child)
         self.trw_actions.addTopLevelItems(group_items)
         self.trw_actions.expandAll()
-        # self.trw_actions.setDragEnabled(True)
-        # self.tree_item_drag = TreeItemDrag()
-        # self.tree_item_drag.tree(self.trw_actions)
-        # self.startDrag = self.trw_actions.startDrag
-        # self.trw_actions.dragLeaveEvent = self.tree_item_drag.dragLeaveEvent
-
-    # def eventFilter(self, obj, event):
-    #     if event.type() == event.Type.Drop:
-    #         print('event.type:' + str(event.type()))
-    #         item = QTreeWidgetItem(self.trw_steps)
-    #         item.setText(0, event.mimeData().text())
-    #         event.accept()
-    #         return True
-    #     return super().eventFilter(obj, event)
 
     def load_steps_tree(self, steps):
         self.trw_steps.setColumnCount(2)
@@ -205,6 +188,8 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         # self.trw_steps.setStyleSheet(f"QTreeView::item{{height: 25px; }}")
         # self.trw_steps.doubleClicked.connect(self.double_click_event)
         self.trw_steps.mouseDoubleClickEvent = self.double_click_event
+        self.trw_steps.itemChanged.connect(self.step_item_changed)
+
         # self.trw_steps.setFrameShape(QFrame.Shape.Box)
         style = """
                     QTreeWidget {
@@ -253,6 +238,34 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.win.show()
 
+    def step_item_changed(self, item, column):
+        items = self.trw_steps.selectedItems()
+        if items is not None and len(items) > 0:
+            selected_item = items[0]
+            selected_data = selected_item.data(0, role)
+            if selected_data is not None:
+                child_count = selected_item.childCount()
+                if child_count > 0:
+                    for i in range(child_count):
+                        new_child = QTreeWidgetItem()
+                        new_child.setText(0, selected_item.child(i).text(0))
+                        new_child.setData(0, role, selected_item.child(i).data(0, role))
+                        item.addChild(new_child)
+                    self.trw_steps.expandItem(item)
+                else:
+                    item.setData(0, role, selected_data)
+                self.remove_item(selected_item, column)
+
+    def remove_item(self, item, column):
+        if item.parent() is None:  # Check if it is a top-level item
+            self.trw_steps.takeTopLevelItem(self.trw_steps.indexOfTopLevelItem(item))
+            print(f"Removed top-level item: {item.text(column)}")
+        else:
+            parent = item.parent()
+            parent.removeChild(item)
+            print(f"Removed child item: {item.text(column)}")
+        self.trw_steps.setCurrentItem(None)
+
     def fetch_steps(self):
         steps = []
         for i in range(self.trw_steps.topLevelItemCount()):
@@ -285,6 +298,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         else:
             self.btn_sync.hide()
             # self.btn_sync.setStyleSheet("color:" + QColor(244, 204, 204).name())
+        self.trw_steps.clear()
         self.load_steps_tree(steps)
 
     def load_task_data(self):
@@ -336,11 +350,6 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.open_editor(items[0])
         else:
             QMessageBox.critical(self, "请选择", "请先选择一行")
-
-    # def get_step(self,code):
-    #     for item in self.steps:
-    #         if item['stepCode'] == code:
-    #             return item
 
     def get_action_by_code(self, code):
         for act in self.actions:
@@ -402,154 +411,3 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             if res:
                 self.load_step_data()
             QMessageBox.information(self, "结果", '同步成功' if res else '同步失败')
-
-
-class TableRowDrag(QTableWidget):
-
-    def table(self, table):
-        self.tb = table
-
-    def tree(self, tree):
-        self.tr = tree
-
-    def service(self, service):
-        self.service = service
-
-    def dropEvent(self, event: QDropEvent) -> None:
-        self.target_row = self.tb.indexAt(event.pos()).row()
-        # print('drag from tree: row:' + str(self.target_row))
-
-        self.tb.changed = True
-        if hasattr(self, 'source_row'):
-            if self.target_row == self.source_row:
-                return
-
-            if self.target_row == -1:
-                self.target_row = self.tb.rowCount()
-
-            items = self.get_moving_items()
-            self.tb.removeRow(self.source_row)
-            self.tb.insertRow(self.source_row)
-            start = min(self.target_row, self.source_row)
-            end = max(self.target_row, self.source_row)
-            for row in range(start, end):
-                self.tb.removeRow(row)
-                self.tb.insertRow(row)
-            for item in items:
-                self.tb.setItem(start, 0, item[0])
-                self.tb.setItem(start, 1, item[1])
-                start = start + 1
-            brush = QBrush(QColor(255, 204, 204))
-            self.tb.item(self.target_row, 0).setBackground(brush)
-            self.tb.item(self.target_row, 1).setBackground(brush)
-            # self.tb.selectRow(self.target_row)
-            self.tb.clearSelection()
-            del self.source_row
-            self.refresh_number()
-        else:
-            self.tb.selectRow(self.target_row)
-            tr_item = self.tr.currentItem()
-            if tr_item is not None:
-                print(tr_item.text(0))
-                print(tr_item.data(0, role))
-                self.add_step(tr_item.data(0, role), tr_item.text(0), self.target_row)
-
-    def eventFilter(self, object: QObject, event: QEvent) -> bool:
-        if event.type() == QEvent.Type.ChildAdded:
-            self.source_row = object.currentRow()
-            return False
-        else:
-            # if(event.type() == 10):
-            #     tr_item = self.tr.currentItem()
-            #     if tr_item is not None:
-            #         print(tr_item.text(0))
-            return super(TableRowDrag, self).eventFilter(object, event)
-
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        row = self.tb.indexAt(event.pos())
-        print('mouseMoveEvent, row:' + str(row))
-        super(TableRowDrag, self).mouseMoveEvent(event)
-
-    # def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-    #     row = self.tb.indexAt(event.pos())
-    #     print('dragLeaveEvent, row:' + str(row))
-    #     super(TableRowDrag, self).mouseReleaseEvent(event)
-
-    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
-        # row = self.tb.indexAt(event.pos())
-        # print('dragEnterEvent, row:' + str(row))
-        event.acceptProposedAction()
-
-    def get_moving_items(self):
-        items = []
-        if self.target_row < self.source_row:
-            items.append([self.tb.takeItem(self.source_row,0), self.tb.takeItem(self.source_row,1)])
-            for row in range(self.target_row, self.source_row):
-                items.append([self.tb.takeItem(row,0),self.tb.takeItem(row,1)])
-        else:
-            source = [self.tb.takeItem(self.source_row,0), self.tb.takeItem(self.source_row,1)]
-            for row in range(self.source_row+1, self.target_row+1):
-                items.append([self.tb.takeItem(row,0),self.tb.takeItem(row,1)])
-            items.append(source)
-        return items
-
-    def add_step(self, action_code, action_name, rows):
-        self.win = editor.StepEditorWin()
-        self.win.step = self.init_step(action_code, rows)
-        self.win.action_name = action_name
-        self.win.number = rows
-        self.win.base = self
-        self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.win.show()
-
-    def init_step(self, action_code, number):
-        target_args = self.service.find_target_args(action_code)
-        action_args = self.service.find_action_args(action_code)
-        return {'id': None, 'flowCode': None, 'groupCode': None, 'stepCode': None, 'stepName': '',
-                'actionCode': action_code, 'actionArgs': '{}', 'targetArgs': '{}', 'number': number,
-                'level': 1, 'status': 1, 'failedRetry': None, 'failedStrategy': 0, 'failedSkipTo': '',
-                'skipTo': '登录成功?', 'falseSkipTo': None, 'skipCondition': '', 'waitBefore': None,
-                'waitAfter': None, 'timeout': 10, 'type': None, 'openEdit': None,
-                'actionArgsVOS': action_args["data"], 'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
-
-    def add_step_ok(self):
-        if hasattr(self, 'win'):
-            step = self.win.step
-            new_number = step['number']
-            if new_number == self.win.number + 1:
-                row_count = self.tb.rowCount()
-                self.tb.insertRow(row_count)
-                for i in reversed(range(new_number, row_count)):
-                    self.tb.setItem(i+1, 0, self.tb.takeItem(i, 0))
-                    self.tb.setItem(i+1, 1, self.tb.takeItem(i, 1))
-
-                brush = QBrush(QColor(255, 204, 255))
-                item_0 = QTableWidgetItem(str(step['stepName']))
-                item_0.setData(1, step)
-                item_0.setBackground(brush)
-                self.tb.setItem(new_number, 0, item_0)
-                item_1 = QTableWidgetItem(str(self.win.action_name))
-                item_1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                item_1.setBackground(brush)
-                self.tb.setItem(new_number, 1, item_1)
-                self.tb.clearSelection()
-                print(self.win.number)
-                print(step['number'])
-                self.refresh_number()
-                self.tb.changed = True
-
-    def refresh_number(self):
-        row_count = self.tb.rowCount()
-        for i in range(row_count):
-            data = self.tb.item(i, 0).data(role)
-            data['number'] = i + 1
-            self.tb.item(i, 0).setData(1, data)
-
-
-class TreeItemDrag(QTreeWidget):
-    def tree(self, tree):
-        self.tree = tree
-
-    def dragLeaveEvent(self, event: QDragLeaveEvent) -> None:
-        item = self.tree.currentItem()
-        print(item.text(0))

@@ -174,7 +174,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>加载</string>
+     <string>重新加载</string>
     </property>
    </widget>
   </widget>
