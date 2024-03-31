@@ -52,6 +52,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
                       self.formLayoutWidget_3.geometry().y(),
                       self.formLayoutWidget_3.geometry().width(),
                       self.formLayoutWidget_3.geometry().height() - offsize))
+            self.fol_target.setVerticalSpacing(size1)
             self.fol_target.setGeometry(
                 QRect(self.fol_target.geometry().x(),
                       self.fol_target.geometry().y(),
@@ -68,14 +69,15 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
                       self.formLayoutWidget_4.geometry().y() - offsize,
                       self.formLayoutWidget_4.geometry().width(),
                       self.formLayoutWidget_4.geometry().height() + offsize))
+            self.fol_action.setVerticalSpacing(size2)
             self.fol_action.setGeometry(
                 QRect(self.fol_action.geometry().x(),
-                      self.fol_action.geometry().y() - offsize,
+                      self.fol_action.geometry().y() - offsize + 5,
                       self.fol_action.geometry().width(),
                       self.fol_action.geometry().height() + offsize))
             self.grb_action.setGeometry(
                 QRect(self.grb_action.geometry().x(),
-                      self.grb_action.geometry().y() - offsize,
+                      self.grb_action.geometry().y() - offsize + 5,
                       self.grb_action.geometry().width(),
                       self.grb_action.geometry().height() + offsize))
             # rect.adjust(self.fol_action.geometry().x(), self.fol_action.geometry().y(),
@@ -83,8 +85,8 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
             # self.fol_action.setVerticalSpacing(size2)
             # self.fol_action.setGeometry(rect)
             # self.fol_action.setSizeConstraint()
-            print(self.grb_action.geometry())
-            print(self.fol_action.geometry())
+            # print(self.grb_action.geometry())
+            # print(self.fol_action.geometry())
 
         self.load_dynamic_data('target')
         self.load_dynamic_data('action')
