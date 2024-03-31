@@ -52,7 +52,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>1051</width>
+     <width>741</width>
      <height>51</height>
     </rect>
    </property>
@@ -75,9 +75,9 @@
    <widget class="QComboBox" name="cmb_app">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>70</x>
       <y>10</y>
-      <width>181</width>
+      <width>291</width>
       <height>31</height>
      </rect>
     </property>
@@ -95,7 +95,7 @@
    <widget class="QLabel" name="lab_flow">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>390</x>
       <y>20</y>
       <width>53</width>
       <height>15</height>
@@ -108,9 +108,9 @@
    <widget class="QComboBox" name="cmb_flow">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>440</x>
       <y>10</y>
-      <width>251</width>
+      <width>291</width>
       <height>31</height>
      </rect>
     </property>
@@ -127,55 +127,6 @@
       <string>广州社保减员</string>
      </property>
     </item>
-   </widget>
-   <widget class="QLabel" name="lab_account">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>20</y>
-      <width>53</width>
-      <height>15</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>启动参数：</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cmb_task">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>10</y>
-      <width>311</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="currentText">
-     <string>广州南仕邦人力资源有限公司-123929</string>
-    </property>
-    <item>
-     <property name="text">
-      <string>广州南仕邦人力资源有限公司-123929</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>广州仕邦人力资源有限公司-123923</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QPushButton" name="btn_reload">
-    <property name="geometry">
-     <rect>
-      <x>960</x>
-      <y>10</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>重新加载</string>
-    </property>
    </widget>
   </widget>
   <widget class="QGroupBox" name="gbx_args">
@@ -368,7 +319,7 @@
    <widget class="QPushButton" name="btn_sync">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>210</x>
       <y>10</y>
       <width>111</width>
       <height>31</height>
@@ -400,12 +351,61 @@
      <string>保存</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_reload">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>10</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>重新加载</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>10</y>
+     <width>311</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QComboBox" name="cmb_task">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="currentText">
+     <string>广州南仕邦人力资源有限公司-123929</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>广州南仕邦人力资源有限公司-123929</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>广州仕邦人力资源有限公司-123923</string>
+     </property>
+    </item>
+   </widget>
    <widget class="QPushButton" name="btn_run">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>250</x>
       <y>10</y>
-      <width>81</width>
+      <width>51</width>
       <height>31</height>
      </rect>
     </property>

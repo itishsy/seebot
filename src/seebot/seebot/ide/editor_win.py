@@ -41,16 +41,47 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         if size1 < 6 and size2 > 6:
             offsize = 70
             # self.fol_target.setVerticalSpacing(size1)
-            self.grb_target.setFixedHeight(self.grb_target.height() - offsize)
+            # self.grb_target.setFixedHeight(self.grb_target.height() - offsize)
             # self.fol_action.setVerticalSpacing(size2)
-            self.grb_action.setGeometry(self.grb_action.geometry().x(), self.grb_action.geometry().y() - offsize,
-                                        self.grb_action.geometry().width(), self.grb_action.geometry().height() + 80)
+            # self.grb_action.setGeometry(self.grb_action.geometry().x(), self.grb_action.geometry().y() - offsize,
+            #                             self.grb_action.geometry().width(), self.grb_action.geometry().height() + 80)
             # self.grb_action.setFixedHeight(self.grb_action.height() + 30)
-            rect = QRect()
-            rect.adjust(self.fol_action.geometry().x(), self.fol_action.geometry().y(),
-                                        self.fol_action.geometry().width(), self.fol_action.geometry().height() + 80)
+            # rect = QRect()
+            self.formLayoutWidget_3.setGeometry(
+                QRect(self.formLayoutWidget_3.geometry().x(),
+                      self.formLayoutWidget_3.geometry().y(),
+                      self.formLayoutWidget_3.geometry().width(),
+                      self.formLayoutWidget_3.geometry().height() - offsize))
+            self.fol_target.setGeometry(
+                QRect(self.fol_target.geometry().x(),
+                      self.fol_target.geometry().y(),
+                      self.fol_target.geometry().width(),
+                      self.fol_target.geometry().height() - offsize))
+            self.grb_target.setGeometry(
+                QRect(self.grb_target.geometry().x(),
+                      self.grb_target.geometry().y(),
+                      self.grb_target.geometry().width(),
+                      self.grb_target.geometry().height() - offsize))
+
+            self.formLayoutWidget_4.setGeometry(
+                QRect(self.formLayoutWidget_4.geometry().x(),
+                      self.formLayoutWidget_4.geometry().y() - offsize,
+                      self.formLayoutWidget_4.geometry().width(),
+                      self.formLayoutWidget_4.geometry().height() + offsize))
+            self.fol_action.setGeometry(
+                QRect(self.fol_action.geometry().x(),
+                      self.fol_action.geometry().y() - offsize,
+                      self.fol_action.geometry().width(),
+                      self.fol_action.geometry().height() + offsize))
+            self.grb_action.setGeometry(
+                QRect(self.grb_action.geometry().x(),
+                      self.grb_action.geometry().y() - offsize,
+                      self.grb_action.geometry().width(),
+                      self.grb_action.geometry().height() + offsize))
+            # rect.adjust(self.fol_action.geometry().x(), self.fol_action.geometry().y(),
+            #                             self.fol_action.geometry().width(), self.fol_action.geometry().height() + 80)
             # self.fol_action.setVerticalSpacing(size2)
-            self.fol_action.setGeometry(rect)
+            # self.fol_action.setGeometry(rect)
             # self.fol_action.setSizeConstraint()
             print(self.grb_action.geometry())
             print(self.fol_action.geometry())
@@ -238,7 +269,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
             self.step[args_key] = json.dumps(args, ensure_ascii=False)
 
             ori_args = json.loads(self.ori_step[args_key])
-            if ori_args[field_key] != new_val:
+            if not hasattr(ori_args, field_key) or ori_args[field_key] != new_val:
                 self.changed_fields.append(sender.objectName())
 
             for item in self.step[vos_name]:

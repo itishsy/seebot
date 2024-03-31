@@ -154,15 +154,14 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                     top.addChild(child)
         self.trw_actions.addTopLevelItems(group_items)
         self.trw_actions.expandAll()
+        # self.trw_actions.itemClicked.connect(self.action_item_clicked)
+
+    # def action_item_clicked(self, item, column):
+    #     item.setData(column, role, 123)
 
     def load_steps_tree(self, steps):
         self.trw_steps.setColumnCount(2)
         self.trw_steps.setHeaderHidden(True)
-        # self.trw_steps.setAcceptDrops(False)
-        # self.trw_steps.setDragEnabled(True)
-        # self.trw_steps.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
-        # self.trw_steps.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
-
         group_items = []
         top = QTreeWidgetItem()
         for step in steps:
@@ -189,16 +188,18 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         # self.trw_steps.doubleClicked.connect(self.double_click_event)
         self.trw_steps.mouseDoubleClickEvent = self.double_click_event
         self.trw_steps.itemChanged.connect(self.step_item_changed)
+        # self.trw_steps.viewport().installEventFilter(self)
+        # self.trw_steps.dropEvent = self.drop_event
 
         # self.trw_steps.setFrameShape(QFrame.Shape.Box)
         style = """
                     QTreeWidget {
-                        color: #333;
+                        color: #2c0606;
                         border: 1px solid #ccc;
                         font: 290 10pt "Microsoft YaHei UI";
                     }
                     QTreeWidget::item {
-                        height: 30px;
+                        height: 26px;
                     }
                     QTreeWidget::item:selected {
                         background-color: #0078d7;
@@ -239,6 +240,25 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.win.show()
 
     def step_item_changed(self, item, column):
+        data = item.data(0, role)
+        if data:
+            print("item data:" + str(data))
+            if isinstance(data, dict):
+                return
+            action = self.get_action_by_code(data)
+            if action:
+                item.setData(0, role, self.init_step(action['actionCode'],0))
+                action_name = item.text(0)
+                item.setText(0, '<' + action_name + '>')
+                item.setText(1, action_name)
+                self.open_editor(item)
+            else:
+                return
+
+        brush = QBrush(QColor(255, 255, 204))
+        item.setBackground(0, brush)
+        item.setBackground(1, brush)
+        print("item text:" + str(item.text(0)))
         items = self.trw_steps.selectedItems()
         if items is not None and len(items) > 0:
             selected_item = items[0]
@@ -249,7 +269,10 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                     for i in range(child_count):
                         new_child = QTreeWidgetItem()
                         new_child.setText(0, selected_item.child(i).text(0))
+                        new_child.setText(1, selected_item.child(i).text(1))
                         new_child.setData(0, role, selected_item.child(i).data(0, role))
+                        new_child.setBackground(0, brush)
+                        new_child.setBackground(1, brush)
                         item.addChild(new_child)
                     self.trw_steps.expandItem(item)
                 else:
@@ -266,20 +289,32 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             print(f"Removed child item: {item.text(column)}")
         self.trw_steps.setCurrentItem(None)
 
+    def init_step(self, action_code, number):
+        target_args = self.service.find_target_args(action_code)
+        action_args = self.service.find_action_args(action_code)
+        return {'id': None, 'flowCode': None, 'groupCode': None, 'stepCode': None, 'stepName': '',
+                'actionCode': action_code, 'actionArgs': '{}', 'targetArgs': '{}', 'number': number,
+                'level': 1, 'status': 1, 'failedRetry': None, 'failedStrategy': 0, 'failedSkipTo': '',
+                'skipTo': '', 'falseSkipTo': None, 'skipCondition': '', 'waitBefore': None,
+                'waitAfter': None, 'timeout': 10, 'type': None, 'openEdit': None,
+                'actionArgsVOS': action_args["data"], 'targetArgsVOS': target_args["data"], 'trueSkipTo': ''}
+
+
     def fetch_steps(self):
         steps = []
         for i in range(self.trw_steps.topLevelItemCount()):
             top_item = self.trw_steps.topLevelItem(i)
             print(top_item.text(0))
             top_data = top_item.data(0, role)
-            top_data['number'] = len(steps) + 1
-            steps.append(top_data)
+            if top_data is not None:
+                top_data['number'] = len(steps) + 1
+                steps.append(top_data)
             for j in range(top_item.childCount()):
                 child_item = top_item.child(j)
                 child_data = child_item.data(0, role)
-                child_data['number'] = len(steps) + 1
-                steps.append(child_data)
-                print(child_item.text(0))
+                if child_data is not None:
+                    child_data['number'] = len(steps) + 1
+                    steps.append(child_data)
         return steps
 
     def load_step_data(self):
@@ -339,10 +374,13 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         elif action == run_from_action:
             QMessageBox.information(self, "操作", "此步骤开始运行")
         elif action == delete_action:
-            idx = self.trw_steps.selectedIndexes()
-            row = idx[0].row().real
-            self.trw_steps.removeRow(row)
-            self.trw_steps.changed = False
+            items = self.trw_steps.selectedItems()
+            if items:
+                msg_code = QMessageBox.question(self, "删除确认",
+                                                "是否删除步骤【"+items[0].text(0)+"】及其子步骤",
+                                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                if msg_code == QMessageBox.StandardButton.Yes:
+                    self.remove_item(items[0], 0)
 
     def on_edit_click(self):
         items = self.trw_steps.selectedItems()
