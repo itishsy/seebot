@@ -25,16 +25,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
 
         super(MainWin, self).__init__(parent)
         self.setupUi(self)
-        # self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint)
-        # screen_height = QGuiApplication.screenAt(QCursor().pos()).geometry().height()
-        # if self.size().height() > screen_height:
-        #     self.setFixedSize(self.size().width(), screen_height - 60)
-        # else:
-        #     self.setFixedSize(self.size())
-        # self.tbl_steps.horizontalHeader().setVisible(False)
-        # self.tbl_steps.setColumnWidth(0, 320)
-        # self.tbl_steps.setColumnWidth(1, 100)
-        self.tbl_args.setColumnWidth(0, 80)
+
         self.tbl_args.setColumnWidth(0, 100)
         self.tbl_args.setColumnWidth(1, 230)
 
@@ -42,9 +33,14 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         self.btn_run.clicked.connect(self.on_run_click)
         self.btn_sync.clicked.connect(self.on_sync_click)
         self.btn_reload.clicked.connect(self.load_step_data)
-        self.trw_steps.viewport().installEventFilter(self)
-        # self.btn_sync.setStyleSheet("color:" + QColor(255, 51, 204).name())
-        # self.tbl_steps.mouseReleaseEvent = self.tableDragEvent.mouseReleaseEvent
+
+        self.trw_actions.setDragEnabled(True)
+        self.trw_actions.setAcceptDrops(False)
+        self.trw_actions.setDragDropMode(QTreeWidget.DragDropMode.DragOnly)
+
+        self.trw_steps.setAcceptDrops(True)
+        self.trw_steps.setDragEnabled(True)
+        self.trw_steps.setDragDropMode(QTreeWidget.DragDropMode.DragDrop)
 
     def show(self) -> None:
         if self.service is None:
@@ -71,16 +67,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                 # self.btn_sync.hide()
                 self.load_action_tree()
                 self.load_app_combo()
-                # self.tbl_steps.setAcceptDrops(True)
-                # self.tbl_steps.doubleClicked.connect(self.on_edit_click)
-                # self.tableDragEvent = TableRowDrag()
-                # self.tableDragEvent.table(self.tbl_steps)
-                # self.tableDragEvent.tree(self.trw_actions)
-                # self.tableDragEvent.service(self.service)
-                # self.tbl_steps.installEventFilter(self.tableDragEvent)
-                # self.tbl_steps.dropEvent = self.tableDragEvent.dropEvent
-                # self.tbl_steps.dragEnterEvent = self.tableDragEvent.dragEnterEvent
-                # setattr(self.tbl_steps, 'changed', False)
+                # setattr(self.trw_steps, 'changed', False)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if hasattr(self, 'win'):
@@ -148,10 +135,10 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
 
     def load_action_tree(self):
         self.trw_actions.setColumnWidth(0, 200)
-        # self.trw_actions.setHeaderHidden(True)
-        self.trw_actions.setDragEnabled(True)
-        self.trw_actions.setAcceptDrops(True)
-        self.trw_actions.setDragDropMode(QTreeWidget.DragDropMode.DragOnly)
+        self.trw_actions.setHeaderHidden(True)
+        # self.trw_actions.setDragEnabled(True)
+        # self.trw_actions.setAcceptDrops(True)
+        # self.trw_actions.setDragDropMode(QTreeWidget.DragDropMode.DragOnly)
         group = []
         for act in self.actions:
             if act['groupName'] not in group:
@@ -176,22 +163,22 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         # self.startDrag = self.trw_actions.startDrag
         # self.trw_actions.dragLeaveEvent = self.tree_item_drag.dragLeaveEvent
 
-    def eventFilter(self, obj, event):
-        if event.type() == event.Type.Drop:
-            print('event.type:' + str(event.type()))
-            item = QTreeWidgetItem(self.trw_steps)
-            item.setText(0, event.mimeData().text())
-            event.accept()
-            return True
-        return super().eventFilter(obj, event)
+    # def eventFilter(self, obj, event):
+    #     if event.type() == event.Type.Drop:
+    #         print('event.type:' + str(event.type()))
+    #         item = QTreeWidgetItem(self.trw_steps)
+    #         item.setText(0, event.mimeData().text())
+    #         event.accept()
+    #         return True
+    #     return super().eventFilter(obj, event)
 
     def load_steps_tree(self, steps):
         self.trw_steps.setColumnCount(2)
-        # self.trw_steps.setHeaderHidden(True)
-        self.trw_steps.setAcceptDrops(False)
+        self.trw_steps.setHeaderHidden(True)
+        # self.trw_steps.setAcceptDrops(False)
         # self.trw_steps.setDragEnabled(True)
-        self.trw_steps.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
-        self.trw_steps.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
+        # self.trw_steps.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
+        # self.trw_steps.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
 
         group_items = []
         top = QTreeWidgetItem()
@@ -266,29 +253,30 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.win.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.win.show()
 
-
     def fetch_steps(self):
         steps = []
         for i in range(self.trw_steps.topLevelItemCount()):
             top_item = self.trw_steps.topLevelItem(i)
             print(top_item.text(0))
-            steps.append(top_item.data(0,role))
+            top_data = top_item.data(0, role)
+            top_data['number'] = len(steps) + 1
+            steps.append(top_data)
             for j in range(top_item.childCount()):
                 child_item = top_item.child(j)
-                steps.append(child_item.data(0,role))
+                child_data = child_item.data(0, role)
+                child_data['number'] = len(steps) + 1
+                steps.append(child_data)
                 print(child_item.text(0))
         return steps
 
     def load_step_data(self):
-        # self.tbl_steps.setRowCount(0)
         flow_code = self.cmb_flow.currentData()['flowCode']
         cache_flow = self.storage.find_flow(flow_code)
         if cache_flow is None:
             steps = self.service.find_step(flow_code)
         else:
             steps = json.loads(cache_flow['steps'])
-        # for step in steps:
-        #     self.append_row(step)
+
         self.trw_steps.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.trw_steps.customContextMenuRequested.connect(self.show_context_menu)
         if cache_flow is not None and cache_flow['status'] == 0:
@@ -342,24 +330,6 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
             self.trw_steps.removeRow(row)
             self.trw_steps.changed = False
 
-    def append_row(self, step):
-        if 'stepName' not in step:
-            return
-
-        name = step['stepName']
-        level = step['level']
-        action = self.get_action_by_code(step['actionCode'])
-        rows = self.tbl_steps.rowCount()
-        self.tbl_steps.insertRow(rows)
-        item_name = QTableWidgetItem(str(name))
-        item_name.setData(1, step)
-        self.tbl_steps.setItem(rows, 0, item_name)
-        item_type = QTableWidgetItem(str(action['actionName']))
-        item_type.setToolTip(str(action['comment']))
-        item_type.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.tbl_steps.setItem(rows, 1, item_type)
-        self.tbl_steps.changed = True
-
     def on_edit_click(self):
         items = self.trw_steps.selectedItems()
         if items:
@@ -378,13 +348,10 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
                 return act
 
     def on_save_click(self):
-        if self.tbl_steps.changed:
-            steps = []
-            row_count = self.tbl_steps.rowCount()
-            for i in range(row_count):
-                data = self.tbl_steps.item(i, 0).data(role)
-                data['number'] = i + 1
-                steps.append(data)
+        if self.trw_steps.changed:
+            steps = self.fetch_steps()
+            for i in range(len(steps)):
+                steps[i]['number'] = i + 1
             flow_code = self.cmb_flow.currentData()["flowCode"]
             self.storage.upset_flow(flow_code, steps)
             QMessageBox.information(self, "结果", '操作成功')
@@ -418,10 +385,7 @@ class MainWin(QMainWindow, Ui_frm_flow_config):
         for i in range(args_count):
             flow_args.update({self.tbl_args.item(i, 0).text(): self.tbl_args.item(i, 1).text()})
 
-        flow_steps = []
-        step_count = self.tbl_steps.rowCount()
-        for i in range(step_count):
-            flow_steps.append(self.tbl_steps.item(i, 0).data(role))
+        flow_steps = self.fetch_steps()
 
         res = self.service.debug_flow_step(flow_steps, flow_args, chrome_args)
         if res['code'] == 200:

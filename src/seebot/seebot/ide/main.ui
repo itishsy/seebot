@@ -40,27 +40,6 @@
       <height>541</height>
      </rect>
     </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="editTriggers">
-     <set>QAbstractItemView::NoEditTriggers</set>
-    </property>
-    <property name="dragEnabled">
-     <bool>true</bool>
-    </property>
-    <property name="dragDropOverwriteMode">
-     <bool>false</bool>
-    </property>
-    <property name="dragDropMode">
-     <enum>QAbstractItemView::DragOnly</enum>
-    </property>
-    <property name="defaultDropAction">
-     <enum>Qt::IgnoreAction</enum>
-    </property>
-    <attribute name="headerVisible">
-     <bool>false</bool>
-    </attribute>
     <column>
      <property name="text">
       <string notr="true">1</string>
@@ -291,56 +270,20 @@
    <widget class="QTreeWidget" name="trw_steps">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>471</width>
+      <x>10</x>
+      <y>21</y>
+      <width>461</width>
       <height>541</height>
      </rect>
     </property>
-    <property name="acceptDrops">
-     <bool>true</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="editTriggers">
-     <set>QAbstractItemView::NoEditTriggers</set>
-    </property>
-    <property name="dragEnabled">
-     <bool>true</bool>
-    </property>
-    <property name="dragDropMode">
-     <enum>QAbstractItemView::DragOnly</enum>
-    </property>
-    <property name="selectionMode">
-     <enum>QAbstractItemView::ExtendedSelection</enum>
-    </property>
-    <attribute name="headerVisible">
-     <bool>false</bool>
-    </attribute>
     <column>
      <property name="text">
-      <string notr="true">步骤</string>
+      <string>1</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>指令</string>
-     </property>
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="background">
-      <color>
-       <red>170</red>
-       <green>85</green>
-       <blue>127</blue>
-      </color>
+      <string>2</string>
      </property>
     </column>
    </widget>
