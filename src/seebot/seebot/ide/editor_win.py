@@ -21,6 +21,7 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         self.action_cond_data = {}
         self.changed_fields = []
         self.btn_save.clicked.connect(self.on_save_click)
+        self.btn_close.clicked.connect(self.close)
         self.btn_run.clicked.connect(self.on_run_click)
 
     def show(self) -> None:
@@ -34,62 +35,52 @@ class EditorWin(QMainWindow, Ui_frm_step_edit):
         self.load_step_data()
         self.fetch_cond_data()
 
-        size1 = len(self.step["targetArgsVOS"])
-        size2 = len(self.step["actionArgsVOS"])
-        print(self.grb_action.geometry())
-        print(self.fol_action.geometry())
-        if size1 < 6 and size2 > 6:
-            offsize = 70
-            # self.fol_target.setVerticalSpacing(size1)
-            # self.grb_target.setFixedHeight(self.grb_target.height() - offsize)
-            # self.fol_action.setVerticalSpacing(size2)
-            # self.grb_action.setGeometry(self.grb_action.geometry().x(), self.grb_action.geometry().y() - offsize,
-            #                             self.grb_action.geometry().width(), self.grb_action.geometry().height() + 80)
-            # self.grb_action.setFixedHeight(self.grb_action.height() + 30)
-            # rect = QRect()
-            self.formLayoutWidget_3.setGeometry(
-                QRect(self.formLayoutWidget_3.geometry().x(),
-                      self.formLayoutWidget_3.geometry().y(),
-                      self.formLayoutWidget_3.geometry().width(),
-                      self.formLayoutWidget_3.geometry().height() - offsize))
-            self.fol_target.setVerticalSpacing(size1)
-            self.fol_target.setGeometry(
-                QRect(self.fol_target.geometry().x(),
-                      self.fol_target.geometry().y(),
-                      self.fol_target.geometry().width(),
-                      self.fol_target.geometry().height() - offsize))
-            self.grb_target.setGeometry(
-                QRect(self.grb_target.geometry().x(),
-                      self.grb_target.geometry().y(),
-                      self.grb_target.geometry().width(),
-                      self.grb_target.geometry().height() - offsize))
-
-            self.formLayoutWidget_4.setGeometry(
-                QRect(self.formLayoutWidget_4.geometry().x(),
-                      self.formLayoutWidget_4.geometry().y() - offsize,
-                      self.formLayoutWidget_4.geometry().width(),
-                      self.formLayoutWidget_4.geometry().height() + offsize))
-            self.fol_action.setVerticalSpacing(size2)
-            self.fol_action.setGeometry(
-                QRect(self.fol_action.geometry().x(),
-                      self.fol_action.geometry().y() - offsize + 5,
-                      self.fol_action.geometry().width(),
-                      self.fol_action.geometry().height() + offsize))
-            self.grb_action.setGeometry(
-                QRect(self.grb_action.geometry().x(),
-                      self.grb_action.geometry().y() - offsize + 5,
-                      self.grb_action.geometry().width(),
-                      self.grb_action.geometry().height() + offsize))
-            # rect.adjust(self.fol_action.geometry().x(), self.fol_action.geometry().y(),
-            #                             self.fol_action.geometry().width(), self.fol_action.geometry().height() + 80)
-            # self.fol_action.setVerticalSpacing(size2)
-            # self.fol_action.setGeometry(rect)
-            # self.fol_action.setSizeConstraint()
-            # print(self.grb_action.geometry())
-            # print(self.fol_action.geometry())
+        target_args = self.step["targetArgsVOS"]
+        action_args = self.step["actionArgsVOS"]
+        t_size = len(target_args)
+        a_size = len(action_args)
+        if t_size > 6 or a_size > 6:
+            if self.real_long_size(target_args) or self.real_long_size(action_args):
+                offset = (a_size - t_size) * 20
+                if offset > 0:
+                    offset = 80 if offset > 80 else offset
+                else:
+                    offset = -80 if offset < -80 else offset
+                self.grb_target.setGeometry(
+                    QRect(self.grb_target.geometry().x(),
+                          self.grb_target.geometry().y(),
+                          self.grb_target.geometry().width(),
+                          self.grb_target.geometry().height() - offset))
+                self.formLayoutWidget_3.setGeometry(
+                    QRect(self.formLayoutWidget_3.geometry().x(),
+                          self.formLayoutWidget_3.geometry().y(),
+                          self.formLayoutWidget_3.geometry().width(),
+                          self.formLayoutWidget_3.geometry().height() - offset))
+                self.grb_action.setGeometry(
+                    QRect(self.grb_action.geometry().x(),
+                          self.grb_action.geometry().y() - offset,
+                          self.grb_action.geometry().width(),
+                          self.grb_action.geometry().height() + offset))
+                self.formLayoutWidget_4.setGeometry(
+                    QRect(self.formLayoutWidget_4.geometry().x(),
+                          self.formLayoutWidget_4.geometry().y(),
+                          self.formLayoutWidget_4.geometry().width(),
+                          self.formLayoutWidget_4.geometry().height() + offset))
 
         self.load_dynamic_data('target')
         self.load_dynamic_data('action')
+
+    @staticmethod
+    def real_long_size(args):
+        if len(args) > 6:
+            for arg in args:
+                if 'cond' in arg and len(arg['cond'].strip()) > 0:
+                    cond = json.loads(arg['cond'])
+                    if isinstance(cond, dict):
+                        for key, value in cond.items():
+                            if len(value.split(',')) > 6:
+                                return True
+        return False
 
     def load_step_data(self):
         print(self.step)

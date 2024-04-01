@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
+    <width>753</width>
     <height>696</height>
    </rect>
   </property>
@@ -133,24 +133,24 @@
    <property name="geometry">
     <rect>
      <x>750</x>
-     <y>70</y>
+     <y>10</y>
      <width>311</width>
-     <height>351</height>
+     <height>391</height>
     </rect>
    </property>
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
    <property name="title">
-    <string>运行时变量</string>
+    <string/>
    </property>
    <widget class="QTableWidget" name="tbl_args">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>291</width>
-      <height>321</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -167,7 +167,7 @@
     </property>
     <column>
      <property name="text">
-      <string>键（Key）</string>
+      <string>变量（Key）</string>
      </property>
     </column>
     <column>
@@ -181,9 +181,9 @@
    <property name="geometry">
     <rect>
      <x>750</x>
-     <y>420</y>
+     <y>390</y>
      <width>311</width>
-     <height>221</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="title">
@@ -198,7 +198,7 @@
       <x>10</x>
       <y>20</y>
       <width>291</width>
-      <height>191</height>
+      <height>221</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -244,78 +244,13 @@
     <rect>
      <x>10</x>
      <y>640</y>
-     <width>1051</width>
+     <width>741</width>
      <height>51</height>
     </rect>
    </property>
    <property name="title">
     <string/>
    </property>
-   <widget class="QPushButton" name="btn_suspend">
-    <property name="geometry">
-     <rect>
-      <x>700</x>
-      <y>10</y>
-      <width>61</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>暂停</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_continue">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>10</y>
-      <width>61</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>继续</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_back">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>10</y>
-      <width>61</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>上一步</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_next">
-    <property name="geometry">
-     <rect>
-      <x>910</x>
-      <y>10</y>
-      <width>61</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>下一步</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_stop">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>10</y>
-      <width>61</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>停止</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btn_sync">
     <property name="geometry">
      <rect>
@@ -364,23 +299,10 @@
      <string>重新加载</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_4">
-   <property name="geometry">
-    <rect>
-     <x>750</x>
-     <y>10</y>
-     <width>311</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
    <widget class="QComboBox" name="cmb_task">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>400</x>
       <y>10</y>
       <width>231</width>
       <height>31</height>
@@ -403,14 +325,79 @@
    <widget class="QPushButton" name="btn_run">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>640</x>
       <y>10</y>
-      <width>51</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>运行</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_5">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>639</y>
+     <width>311</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QPushButton" name="btn_suspend">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>暂停</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_back">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>10</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>上一步</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_next">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>下一步</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_stop">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>10</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>停止</string>
     </property>
    </widget>
   </widget>
